@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:13
@@ -19,23 +20,35 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.12"
+        python-version: '3.12'
+
     - name: Install dependencies
+      working-directory: backend
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run Tests
-      run: |
-        python manage.py test
+
+    - name: Configure Django settings
+      working-directory: backend
+      run: echo "SECRET_KEY=temporarysecret" >> .env
+
     - name: Run migrations
       working-directory: backend
       run: |
         python manage.py makemigrations
         python manage.py migrate
+
+    - name: Run tests
+      working-directory: backend
+      run: python manage.py test
