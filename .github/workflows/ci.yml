@@ -1,10 +1,10 @@
-name: Django CI
+name: CI
 
 on:
   push:
-    branches: [ "main" ]   # Runs on push to main branch
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]   # Runs on PR to main branch
+    branches: ["main"]
 
 jobs:
   build:
@@ -12,47 +12,48 @@ jobs:
 
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: fluxo_db
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping --silent"
+          --health-cmd="mysqladmin ping -h localhost"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Configure Django settings
-      run: |
-        echo "SECRET_KEY=temporarysecret" >> .env
-        echo "DEBUG=True" >> .env
-        echo "DATABASE_NAME=fluxo_db" >> .env
-        echo "DATABASE_USER=root" >> .env
-        echo "DATABASE_PASSWORD=password" >> .env
-        echo "DATABASE_HOST=127.0.0.1" >> .env
-        echo "DATABASE_PORT=3306" >> .env
+      - name: Create .env file
+        working-directory: backend
+        run: |
+          echo "SECRET_KEY=temporarysecret" >> .env
+          echo "DB_NAME=fluxo_db" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASSWORD=Kish_ore_29" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
 
-    - name: Run migrations
-      run: |
-        python manage.py makemigrations
-        python manage.py migrate
+      - name: Run migrations
+        working-directory: backend
+        run: |
+          python manage.py makemigrations
+          python manage.py migrate
 
-    - name: Run tests
-      run: |
-        python manage.py test
+      - name: Run tests
+        working-directory: backend
+        run: python manage.py test
