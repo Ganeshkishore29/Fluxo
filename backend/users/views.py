@@ -22,3 +22,8 @@ class LoginView(APIView):
         if serializer.is_valid():
             return Response(serializer.validated_data,status=status.HTTP_200_OK) #validated_data doesn't save anything to the database. It just returns the tokens like: {'access': '...', 'refresh': '...'}.
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+class ProfileView(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        serializer=UserSerializer(request.user)
+        return Response(serializer.data,status=status.HTTP_200_OK)
