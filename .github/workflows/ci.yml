@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: Kish_ore_29
+          MYSQL_DATABASE: fluxo_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Create .env file
+        run: |
+          echo "SECRET_KEY=temporarysecret" >> backend/.env
+          echo "DB_NAME=fluxo_db" >> backend/.env
+          echo "DB_USER=root" >> backend/.env
+          echo "DB_PASSWORD=Kish_ore_29" >> backend/.env
+          echo "DB_HOST=127.0.0.1" >> backend/.env
+          echo "DB_PORT=3306" >> backend/.env
+
+      - name: Wait for MySQL
+        run: sleep 15
+
+      - name: Run migrations
+        run: |
+          python backend/manage.py makemigrations
+          python backend/manage.py migrate
+
+      - name: Run tests
+        run: python backend/manage.py test

@@ -1,0 +1,35 @@
+/* Premium scrollbar */
+.scrollbar-premium {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,.35) transparent;
+}
+
+.scrollbar-premium::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-premium::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.scrollbar-premium::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.25),
+    rgba(0,0,0,.45)
+  );
+  border-radius: 999px;
+}
+
+.scrollbar-premium::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.45),
+    rgba(0,0,0,.75)
+  );
+}
+
+html{
+    overflow-y: scroll;
+}

@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+@keyframes slideInLeft {
+  0% { 
+    transform: translateX(-100%);
+  }
+  100% { 
+    transform: translateX(0);
+  }
+}
