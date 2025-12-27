@@ -14,16 +14,6 @@ from pathlib import Path
 import os
 from datetime import timedelta
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-CASHFREE_CLIENT_ID = os.getenv("CASHFREE_CLIENT_ID")
-CASHFREE_CLIENT_SECRET = os.getenv("CASHFREE_CLIENT_SECRET")
-CASHFREE_API_URL = os.getenv("CASHFREE_API_URL")
-
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
