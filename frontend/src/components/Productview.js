@@ -31,7 +31,7 @@ const ProductView = () => {
      axios
   .get(`${API_URL}/similar-product/${id}/`)
   .then((res) => {
-    console.log("SIMILAR PRODUCT API RESPONSE 👉", res.data);
+    console.log("SIMILAR PRODUCT API RESPONSE ", res.data);
     setSimilarProducts(
       Array.isArray(res.data) ? res.data : [res.data]
     );
