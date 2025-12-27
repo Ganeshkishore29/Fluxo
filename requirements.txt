@@ -26,3 +26,4 @@ flake8>=7.0.0
 
 # Load .env (alternative to decouple, optional)
 python-dotenv>=1.0.1
+python-dotenv>=1.0.0
