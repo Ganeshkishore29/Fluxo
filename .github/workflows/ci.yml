@@ -19,7 +19,7 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -p${{ secrets.DB_PASSWORD }} --silent"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -47,6 +47,9 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
           echo "DB_HOST=127.0.0.1" >> backend/.env
           echo "DB_PORT=3306" >> backend/.env
+
+      - name: Wait for MySQL
+        run: sleep 15
 
       - name: Run migrations
         run: |
