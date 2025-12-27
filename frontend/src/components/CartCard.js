@@ -12,10 +12,10 @@ const CartCard = ({ product, size, Qty }) => {
   const navigate = useNavigate();
   const token = getToken();
 
-  // ✅ DERIVED VALUE (no state needed)
+  
   const total = product.price * Qty;
 
-  // ✅ Wishlist check only
+  
   useEffect(() => {
     if (!token || !product?.id) return;
 
@@ -90,7 +90,7 @@ const CartCard = ({ product, size, Qty }) => {
         <p className="text-sm">Size: {size}</p>
         <p className="text-sm">Qty: {Qty}</p>
 
-        {/* ✅ TOTAL */}
+        {/* TOTAL */}
         <p className="text-sm font-semibold">
           Total: Rs.{total}
         </p>
