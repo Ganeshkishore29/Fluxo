@@ -14,6 +14,16 @@ from pathlib import Path
 import os
 from datetime import timedelta
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+CASHFREE_CLIENT_ID = os.getenv("CASHFREE_CLIENT_ID")
+CASHFREE_CLIENT_SECRET = os.getenv("CASHFREE_CLIENT_SECRET")
+CASHFREE_API_URL = os.getenv("CASHFREE_API_URL")
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -106,13 +116,13 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Fluxo',
-        'USER': 'root',  
-        'PASSWORD': 'Kish_ore_29', 
-        'HOST': '127.0.0.1',         
-        'PORT': '3306', 
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
