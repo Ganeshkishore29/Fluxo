@@ -1,27 +1,34 @@
-from groq import Groq
 from django.conf import settings
+from groq import Groq
 import json
-
-client = Groq(api_key=settings.GROQ_API_KEY)
 
 _client = None  # lazy singleton
 
 
 def get_groq_client():
+    """
+    Lazily create Groq client only when needed.
+    Safe for CI, migrations, and production.
+    """
     global _client
 
     if _client is None:
         if not settings.GROQ_API_KEY:
             raise RuntimeError(
                 "GROQ_API_KEY is not set. "
-                "Please configure it in environment variables."
+                "AI features are disabled."
             )
         _client = Groq(api_key=settings.GROQ_API_KEY)
 
     return _client
 
+
 def send_to_ai(message):
+    """
+    Send user message to Groq LLM.
+    """
     client = get_groq_client()
+
     prompt = f"""
 You are an AI shopping assistant for a fashion e-commerce app.
 
@@ -29,8 +36,7 @@ IMPORTANT RULES:
 - The platform has ONLY ONE BRAND: Fluxo
 - NEVER ask about brand
 - NEVER include brand in output
-- Extract ONLY from allowed categories and subcategories
-- If the user mentions ONLY price → intent is STILL "search"
+- If the user mentions ONLY price → intent MUST be "search"
 
 ALLOWED CATEGORIES:
 - men
@@ -56,19 +62,11 @@ You MUST return JSON ONLY in this format:
     "max_price": number | null,
     "query": "string | null"
   }},
-  "reply": "Natural language reply for user"
+  "reply": "Natural language reply"
 }}
-
-Extraction rules:
-- Use ONLY the allowed subcategories list
-- If no valid subcategory is mentioned → set subcategory to null
-- Do NOT invent new values
-- Missing fields must be null
-- Casual messages → intent = smalltalk
 
 User message: "{message}"
 """
-
 
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
