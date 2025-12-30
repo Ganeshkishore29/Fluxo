@@ -4,7 +4,24 @@ import json
 
 client = Groq(api_key=settings.GROQ_API_KEY)
 
+_client = None  # lazy singleton
+
+
+def get_groq_client():
+    global _client
+
+    if _client is None:
+        if not settings.GROQ_API_KEY:
+            raise RuntimeError(
+                "GROQ_API_KEY is not set. "
+                "Please configure it in environment variables."
+            )
+        _client = Groq(api_key=settings.GROQ_API_KEY)
+
+    return _client
+
 def send_to_ai(message):
+    client = get_groq_client()
     prompt = f"""
 You are an AI shopping assistant for a fashion e-commerce app.
 
