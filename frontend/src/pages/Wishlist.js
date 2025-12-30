@@ -51,7 +51,7 @@ const Wishlist = () => {
 
       {/* CONTENT */}
       {token && wishlistItems.length > 0 ? (
-       <div className="grid grid-cols-2 md:grid-cols-4 ">
+       <div className="grid grid-cols-2 md:grid-cols-4 sm:grid-cols-3 ">
   {wishlistItems.map((item) => (
     <div key={item.product.id} className="flex flex-col ">
       <ProductCard

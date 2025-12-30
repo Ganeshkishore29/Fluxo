@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
+import SearchPage from "../pages/Search";
 
 const API_URL = "http://localhost:8000/api";
 
@@ -10,7 +11,8 @@ const Navbar=() => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [hoveredCategoryID, setHoveredCategoryID] = useState(null);
-  
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const categoryContainerRef = useRef(null);
   const megaMenuRef = useRef(null);
@@ -169,11 +171,15 @@ useEffect(() => {
 </div>
 
           </div>
+
         {/* RIGHT SIDEBAR */}
 <div className="flex items-center gap-6">
   {/* Desktop icons */}
   <div className="hidden md:flex items-center gap-6">
-    <Search size={20} />
+   <button onClick={() => setIsSearchOpen(true)}>
+  <Search size={20} />
+</button>
+
     <Link to={'/profile'}>
       <User size={20} />
     </Link>
@@ -187,7 +193,10 @@ useEffect(() => {
 
   {/* Mobile icons */}
   <div className="flex md:hidden items-center gap-4">
-    <Search size={20} />
+    <button onClick={() => setIsSearchOpen(true)}>
+  <Search size={20} />
+</button>
+
     <Link to='/profile'>
     <User size={20}/></Link>
     <Link to="/wishlist">
@@ -201,6 +210,42 @@ useEffect(() => {
     <Menu size={24} />
   </button>
 </div>
+
+{/*search*/}
+{isSearchOpen && (
+  <div
+   className="
+  fixed md:absolute
+  inset-0 md:inset-auto
+  md:top-full md:right-0
+  w-full md:w-[50vw]
+  h-full md:h-[90vh]
+  bg-white shadow-2xl border
+  z-[150]
+  flex flex-col
+  transition-transform duration-300
+  animate-slide-in
+"
+
+  >
+    {/* Header */}
+    <div className="flex justify-between items-center px-6 py-4 border-b shrink-0">
+      <h3 className="font-semibold uppercase tracking-wide">
+        Search
+      </h3>
+      <button onClick={() => setIsSearchOpen(false)}>
+        <X size={20} />
+      </button>
+    </div>
+
+    {/* Search Content */}
+    <div className="flex-1 overflow-hidden">
+      <SearchPage onClose={() => setIsSearchOpen(false)} />
+    </div>
+  </div>
+)}
+
+
 
 
       {/* ================= MOBILE MENU ================= */}
@@ -280,7 +325,10 @@ useEffect(() => {
       <div className="mt-10 flex gap-6">
         <Link to="/wishlist"><Heart size={20} /></Link>
         <Link to='/cart'><ShoppingBag size={20} /></Link>
-        <Search size={20} />
+       <button onClick={() => setIsSearchOpen(true)}>
+  <Search size={20} />
+</button>
+
       </div>
     </div>
   </div>

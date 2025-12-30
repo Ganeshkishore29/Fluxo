@@ -162,14 +162,14 @@ const handleAddToCart = async () => {
 
     return (
       <>
-      <div className="w-full md:w-screen grid grid-cols-1 md:grid-cols-2">
+      <div className="w-full md:w-screen grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
 
         {/* ================= LEFT — IMAGES ================= */}
         <div
           ref={imageScrollRef}
           className="
     md:w-[50vw]
-    md:h-[calc(100vh-96px)]
+    md:h-[calc(110vh-96px)]
     md:overflow-y-auto
     md:grid md:grid-cols-2
     md:gap-0          
@@ -214,7 +214,7 @@ const handleAddToCart = async () => {
           className="
     md:w-[50vw]
     md:sticky md:top-24
-    mt-6 md:mt-16
+    mt-6 md:mt-10
     px-6 md:px-[90px]
     py-8 md:py-0
   "
@@ -242,7 +242,7 @@ const handleAddToCart = async () => {
 
 
             <h1 className="text-2xl md:text-3xl font-semibold leading-tight">
-              {product.name}{product.id}
+              {product.name}
             </h1>
 
 
@@ -322,7 +322,7 @@ const handleAddToCart = async () => {
 
           {/* ADD TO CART */}
           <button
-            className="w-[80%] mt-6 mx-auto block bg-black text-white py-4 text-sm font-medium hover:bg-gray-800 shadow-lg"
+            className="w-[80%] mt-6 md:mb-10 mx-auto block bg-black text-white py-4 text-sm font-medium hover:bg-gray-800 shadow-lg"
             onClick={handleAddToCart}
           >
             ADD TO CART
@@ -330,7 +330,7 @@ const handleAddToCart = async () => {
 
 
           {/* DESCRIPTION */}
-          <div className="mt-10 border-t pt-4">
+          <div className="mt-7 border-t pt-4">
             <button
               onClick={() =>
                 setOpenSection(openSection === "desc" ? null : "desc")
@@ -377,12 +377,33 @@ const handleAddToCart = async () => {
         </div>
 
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4">
-  {Array.isArray(similarProducts) &&
-    similarProducts.map((product) => (
-      <SimilarProduct key={product.id} product={product} />
+<div className="mt-10">
+  {/* TITLE */}
+  <h1 className="mx-5 mb-3 text-lg font-hnm tracking-wide">
+    Similar Items
+  </h1>
+
+  {/* PRODUCTS */}
+  <div
+    className="
+      flex gap-4 overflow-x-auto px-4 pb-2
+      sm:grid sm:grid-cols-6 sm:gap-0 sm:overflow-visible
+    "
+  >
+    {similarProducts.map((product) => (
+      <div
+        key={product.id}
+        className="flex-shrink-0 w-[65vw] sm:w-auto"
+      >
+        <SimilarProduct product={product} />
+      </div>
     ))}
+  </div>
 </div>
+
+
+
+
 </>
     );
   }

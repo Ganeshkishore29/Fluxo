@@ -17,10 +17,10 @@ def get_model_and_processor():
         _model= CLIPModel.from_pretrained(MODEL_NAME).to(DEVICE) #loads the CLIP model and moves it to the specified device
         _processor = CLIPProcessor.from_pretrained(MODEL_NAME) #loads the CLIP processor
     return _model, _processor
-model, processor = get_model_and_processor()  #retrieves the loaded model and processor
+
 
 def image_to_embedding(pil_image: Image.Image) -> np.ndarray: #converts a PIL image to a CLIP embedding
-    
+    model, processor = get_model_and_processor()  #retrieves the loaded model and processor
     #preprocess the image for the model
     inputs = processor(images=pil_image, return_tensors="pt").to(DEVICE)   #Uses CLIPProcessor to resize, normalize, and convert the image into a PyTorch tensor (pt = PyTorch).
     with torch.no_grad():  #disables gradient calculation for inference

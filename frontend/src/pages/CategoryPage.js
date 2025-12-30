@@ -15,8 +15,7 @@ const[products,setProducts]=useState([])
   const [banners, setBanners] = useState([]);
   const [subCatBanner,SetsubCatBanner]=useState([])
 const ITEMS_PER_ROW = 6;
-const visibleCount =
-  Math.floor(products.length / ITEMS_PER_ROW) * ITEMS_PER_ROW;
+const visibleCount =Math.floor(products.length / ITEMS_PER_ROW) * ITEMS_PER_ROW;
 
   const navigate = useNavigate();
 
@@ -67,7 +66,13 @@ const visibleCount =
         </div>
       </div>
 
-<div className="mt-4 grid grid-cols-1 px-auto md:grid-cols-2 w-full gap-0">
+<div className="
+  mt-4
+  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2
+  w-[70%] gap-0
+  mx-auto
+  px-0 lg:px-16
+">
   {subCatBanner.map((subcat, index) => (
     <SubcatBanner
       key={subcat.id}
@@ -82,23 +87,36 @@ const visibleCount =
 
 
 
-
 <div className="px-4 mt-5 mb-4">
+  {/* HEADER */}
   <div
-    className="flex items-center justify-between cursor-pointer"
+    className="flex items-center justify-between cursor-pointer mb-3"
     onClick={() => navigate(`/NewIn/${categoryId}`)}
   >
-    <p className="text-lg font-hnm tracking-wide">NEW IN</p>
+    <p className="text-lg font-hnm tracking-wide">
+      NEW IN
+    </p>
     <ArrowRight size={30} />
   </div>
 
-  <div className="mt-4 grid grid-cols-2 md:grid-cols-6">
-  {products.slice(0, visibleCount).map((product) => (
-    <NewInCat key={product.id} product={product} />
-  ))}
+  {/* PRODUCTS */}
+  <div
+    className="
+      flex gap-4 overflow-x-auto pb-2
+      sm:grid sm:grid-cols-6 sm:overflow-visible
+    "
+  >
+    {products.slice(0, visibleCount).map((product) => (
+      <div
+        key={product.id}
+        className="flex-shrink-0 w-[65vw] sm:w-auto"
+      >
+        <NewInCat product={product} />
+      </div>
+    ))}
+  </div>
 </div>
 
-</div>
 
      
     </>

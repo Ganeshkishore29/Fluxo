@@ -1,41 +1,71 @@
 from groq import Groq
 from django.conf import settings
+import json
 
-import os
-client = os.getenv("GROQ_API_KEY")
-
+client = Groq(api_key=settings.GROQ_API_KEY)
 
 def send_to_ai(message):
     prompt = f"""
-    You are an AI shopping assistant.
+You are an AI shopping assistant for a fashion e-commerce app.
 
-    You MUST return JSON only in this format:
+IMPORTANT RULES:
+- The platform has ONLY ONE BRAND: Fluxo
+- NEVER ask about brand
+- NEVER include brand in output
+- Extract ONLY from allowed categories and subcategories
+- If the user mentions ONLY price → intent is STILL "search"
 
-    {{
-        "intent": "search" or "recommend" or "smalltalk",
-        "payload": {{
-            "category": "...",
-            "subcategory": "...",
-            "max_price": number,
-            "query": "..."
-        }},
-        "reply": "Natural language reply"
-    }}
+ALLOWED CATEGORIES:
+- men
+- ladies
 
-    Extract:
-    - category (men/ladies/kids)
-    - subcategory (t-shirt, jeans, shirt, etc.)
-    - max_price if user mentions price
-    - general search query
+ALLOWED SUBCATEGORIES:
+- t-shirt
+- shirt
+- trousers
+- jackets
+- coats
+- tops
+- leggings
+- blouses
 
-    User message: "{message}"
-    """
+You MUST return JSON ONLY in this format:
+
+{{
+  "intent": "search" | "recommend" | "smalltalk",
+  "payload": {{
+    "category": "men | ladies | null",
+    "subcategory": "one of the allowed subcategories or null",
+    "max_price": number | null,
+    "query": "string | null"
+  }},
+  "reply": "Natural language reply for user"
+}}
+
+Extraction rules:
+- Use ONLY the allowed subcategories list
+- If no valid subcategory is mentioned → set subcategory to null
+- Do NOT invent new values
+- Missing fields must be null
+- Casual messages → intent = smalltalk
+
+User message: "{message}"
+"""
+
 
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.2
     )
 
-    import json
-    text = response.choices[0].message.content
-    return json.loads(text)
+    text = response.choices[0].message.content.strip()
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return {
+            "intent": "smalltalk",
+            "payload": {},
+            "reply": "Can you please rephrase that?"
+        }

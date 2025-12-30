@@ -6,14 +6,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction
 from .models import Order, OrderItem, Address
-from .serializers import OrderSerializer, OrderItemSerializer, AddressSerializer
 from django.conf import settings
 from decimal import Decimal
+from .serializers import OrderSerializer, OrderItemSerializer, AddressSerializer
 
-import os
-CASHFREE_APP_ID = os.getenv("CASHFREE_APP_ID")
-CASHFREE_SECRET_KEY = os.getenv("CASHFREE_SECRET_KEY")
-
+CASHFREE_APP_ID = settings.CASHFREE_CLIENT_ID
+CASHFREE_SECRET_KEY = settings.CASHFREE_CLIENT_SECRET
 
 # CART VIEW
 class CartView(APIView):
@@ -147,7 +145,7 @@ class CartView(APIView):
 
 
 
-class CheckoutView(APIView):
+class TotalBillView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -279,3 +277,41 @@ class AddressView(APIView):
                 serializer.save(user=request.user)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AddressByTypeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    # EDIT ADDRESS BY TYPE
+    def put(self, request, address_type):
+        address = get_object_or_404(
+            Address,
+            user=request.user,
+            address_type=address_type
+        )
+
+        serializer = AddressSerializer(
+            address,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # DELETE ADDRESS BY TYPE
+    def delete(self, request, address_type):
+        address = get_object_or_404(
+            Address,
+            user=request.user,
+            address_type=address_type
+        )
+
+        address.delete()
+        return Response(
+            {"detail": f"{address_type} address deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )

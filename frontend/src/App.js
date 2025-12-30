@@ -12,6 +12,10 @@ import Wishlist from "./pages/Wishlist";
 
 import NewInpage from "./pages/NewInPage";
 import CartPage from "./pages/CartPage";
+import Checkout from "./pages/Checkout";
+
+import SearchPage from "./pages/Search";
+import ChatWidget from "./components/ChatWidget";
 
 const App = () => {
   return (
@@ -34,8 +38,11 @@ const App = () => {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/NewIn/:categoryId" element={<NewInpage/>}/>
           <Route path='/cart' element={<CartPage/>}/>
+          <Route path='/checkout' element={<Checkout/>}/>
+        <Route path="/search" element={<SearchPage/>}/>
         
         </Routes>
+        <ChatWidget />
       </main>
 
       {/* Footer */}

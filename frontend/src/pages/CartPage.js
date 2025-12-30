@@ -4,7 +4,8 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import CartCard from '../components/CartCard'
 import { Plus, Minus, Trash2 } from "lucide-react";
-import Checkout from '../components/Checkout'
+
+import TotalBill from '../components/TotalBill'
 
 
 const API_URL = "http://localhost:8000/api"
@@ -34,7 +35,7 @@ useEffect(() => {
   }
 
   axios
-    .get(`${API_URL}/checkout/`, {
+    .get(`${API_URL}/total-bill/`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => setCheckoutData(res.data))
@@ -148,9 +149,9 @@ const updateCartItem = async (itemId, action) => {
       ))}
     </div>
 
-    {/* RIGHT: CHECKOUT (DESKTOP) */}
+    {/* RIGHT: Totalbill (DESKTOP) */}
     <div className="hidden lg:block">
-     <Checkout checkoutData={checkoutData} />
+     <TotalBill checkoutData={checkoutData} />
 
     </div>
 
@@ -165,11 +166,20 @@ const updateCartItem = async (itemId, action) => {
           </p>
 
           <Link to="/">
-            <button
-              className="mt-4px-10 py-5border border-blackbg-white text-blackfont-hnm uppercasetracking-widetransition-all duration-200hover:bg-black hover:text-white"
-            >
-              Explore <span className="font-extrabold"> FLUXO</span>
-            </button></Link>
+          <button
+            className="
+              mt-4
+              px-10 py-5
+              border border-black
+              bg-white text-black
+              font-hnm uppercase
+              tracking-wide
+              transition-all duration-200
+              hover:bg-black hover:text-white
+            "
+          >
+            Explore <span className="font-extrabold"> FLUXO</span>
+          </button></Link>
         </div>
       )}
 {/* MOBILE STICKY CHECKOUT */}
