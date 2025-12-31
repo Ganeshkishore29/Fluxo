@@ -4,6 +4,8 @@ import axios from "axios";
 import {  ArrowRight, LucideArrowBigRightDash } from "lucide-react";
 import NewInCat from "../components/NewInCat";
 import SubcatBanner from "../components/SubcatBanner";
+import ProductCard from "../components/ProductCard";
+import { getToken } from "../utils/PrivateRoute";
 
 
 const API_URL = "http://localhost:8000/api";
@@ -18,6 +20,81 @@ const ITEMS_PER_ROW = 6;
 const visibleCount =Math.floor(products.length / ITEMS_PER_ROW) * ITEMS_PER_ROW;
 
   const navigate = useNavigate();
+const [recommendations, setRecommendations] = useState([]);
+const [subCat, setSubCat] = useState([]);
+const [prod, setProd] = useState([]);
+const [loading, setLoading] = useState(true);
+
+const token = getToken()
+
+/* 1️⃣ Fetch recommendations (personalized) */
+useEffect(() => {
+  if (!token) return;
+
+  axios
+    .get(
+      `${API_URL}/recommendations/?k=8&category_id=${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+    .then((res) => {
+      setRecommendations(res.data.results);
+    })
+    .catch((err) =>
+      console.error("Recommendation fetch error", err)
+    );
+}, [token, id]);
+
+
+/* 2️⃣ Fetch subcategories by parent category */
+useEffect(() => {
+  setLoading(true);
+  setProd([]);
+  setSubCat([]);
+
+  axios
+    .get(`${API_URL}/sub-categories/?parent=${id}`)
+    .then((res) => {
+      setSubCat(res.data);
+    })
+    .catch((err) =>
+      console.error("Sub-category fetch error", err)
+    );
+}, [id]);
+
+/* 3️⃣ Fetch category products */
+useEffect(() => {
+  if (subCat.length === 0) {
+    setLoading(false);
+    return;
+  }
+
+  const ids = subCat.map((sc) => sc.id).join(",");
+
+  axios
+    .get(`${API_URL}/products/?subcategories=${ids}`)
+    .then((res) => {
+      setProd(res.data);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Product fetch error", err);
+      setLoading(false);
+    });
+}, [subCat]);
+
+/* 4️⃣ Filter recommendations by category */
+const filteredRecommendations =
+  subCat.length === 0
+    ? []
+    : recommendations.filter((p) =>
+        subCat.some((sc) => sc.id === p.sub_category)
+      );
+
+const limitedRecommendations = filteredRecommendations.slice(0, 4);
+
+
 
   useEffect(() => {
     
@@ -32,6 +109,7 @@ const visibleCount =Math.floor(products.length / ITEMS_PER_ROW) * ITEMS_PER_ROW;
       axios.get(`${API_URL}/subCatBanner/?id=${categoryId}`)
       .then((res)=>{SetsubCatBanner(res.data);})
       .catch((error)=>{console.log("Cannot fetch New In products", error)})
+      
 
   }, [categoryId]);
 
@@ -115,6 +193,33 @@ const visibleCount =Math.floor(products.length / ITEMS_PER_ROW) * ITEMS_PER_ROW;
       </div>
     ))}
   </div>
+
+
+{/* CATEGORY PRODUCTS */}
+<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+  {prod.slice(0, 4).map((product) => (
+    <ProductCard key={product.id} product={product} />
+  ))}
+</div>
+
+{/* RECOMMENDED FOR YOU */}
+{limitedRecommendations.length > 0 && (
+  <div className="mt-10">
+    <h2 className="mb-4 text-lg font-semibold">
+      Recommended for You
+    </h2>
+
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {limitedRecommendations.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  </div>
+)}
+
+
+
+
 </div>
 
 

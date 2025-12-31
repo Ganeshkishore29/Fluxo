@@ -132,49 +132,79 @@ const confirmDeleteAddress = () => {
 };
 
 
+
   /* ================= LIVE LOCATION (SAFE) ================= */
-  const handleUseLiveLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation not supported");
-      return;
-    }
+const handleUseLiveLocation = () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
 
-    setIsLocating(true);
+  setIsLocating(true);
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const res = await fetch(
-            `${GEO_API}?format=jsonv2&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
-            {
-              headers: {
-                "Accept": "application/json",
-                "User-Agent": "Fluxo-Ecommerce-App"
-              }
-            }
-          );
-          const data = await res.json();
-          const addr = data.address || {};
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      try {
+        const url = `${GEO_API}?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&addressdetails=1&zoom=18`;
 
-          
-          setAddressForm(prev => ({
-            ...prev,
-            second_line: `${addr.road || ""}, ${addr.suburb || ""}`.trim(),
-            city: addr.city || addr.town || addr.village || "",
-            pincode: addr.postcode || "",
-          }));
-        } catch {
-          alert("Unable to fetch address");
-        } finally {
-          setIsLocating(false);
-        }
-      },
-      () => {
-        alert("Location permission denied");
+        const res = await fetch(url, {
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "Fluxo-Ecommerce-App (ganesh@gmail.com)",
+          },
+        });
+
+        const data = await res.json();
+
+        console.log(" Full Reverse Response:", data);
+        console.log(" Address Object:", data.address);
+
+        const addr = data.address || {};
+
+        setAddressForm((prev) => ({
+  ...prev,
+
+  //  Do NOT auto-fill house number
+  first_line: prev.first_line,
+
+  //  Use best-available locality info
+  second_line: [
+    addr.road,                 // if exists
+    addr.neighbourhood,        // fallback
+    addr.suburb,               // fallback
+  ]
+    .filter(Boolean)
+    .join(", "),
+
+  // City logic (robust)
+  city:
+    addr.city ||
+    addr.town ||
+    addr.village ||
+    addr.county ||
+    "",
+
+
+  pincode: addr.postcode || "",
+}));
+
+      } catch (err) {
+        console.error(err);
+        alert("Unable to fetch address");
+      } finally {
         setIsLocating(false);
       }
-    );
-  };
+    },
+    (err) => {
+      console.error(err);
+      alert("Location permission denied");
+      setIsLocating(false);
+    }
+  );
+};
+
+
+
 
   const resetAddressForm = () => {
     setAddressForm({

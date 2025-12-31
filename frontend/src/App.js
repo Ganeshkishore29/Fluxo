@@ -16,6 +16,7 @@ import Checkout from "./pages/Checkout";
 
 import SearchPage from "./pages/Search";
 import ChatWidget from "./components/ChatWidget";
+import PaymentSuccess from "./components/PaymentSuccess";
 
 const App = () => {
   return (
@@ -40,6 +41,8 @@ const App = () => {
           <Route path='/cart' element={<CartPage/>}/>
           <Route path='/checkout' element={<Checkout/>}/>
         <Route path="/search" element={<SearchPage/>}/>
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+
         
         </Routes>
         <ChatWidget />

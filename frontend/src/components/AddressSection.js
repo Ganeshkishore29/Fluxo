@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+import { getToken } from "../utils/PrivateRoute";
 const API_URL = "http://localhost:8000/api";
 
 const AddressSection = ({ onSelect }) => {
@@ -16,7 +16,7 @@ const AddressSection = ({ onSelect }) => {
     pincode: "",
   });
 
-  const token = localStorage.getItem("token");
+  const token = getToken()
 
   useEffect(() => {
     axios

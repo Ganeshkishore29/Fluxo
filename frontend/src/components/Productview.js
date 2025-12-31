@@ -43,6 +43,33 @@ const ProductView = () => {
 
   }, [id]);
 
+useEffect(() => {
+  if (!token || !id) return;
+
+  const startTime = Date.now();
+
+  return () => {
+    const durationSeconds = Math.floor(
+      (Date.now() - startTime) / 1000
+    );
+
+    axios.post(
+      `${API_URL}/activity/create/`,
+      {
+        product_id: id,
+        action: "view",
+        duration_seconds: durationSeconds,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ).catch((err) =>
+      console.error("Activity tracking error", err)
+    );
+  };
+}, [id, token]);
 
 
   useEffect(() => {
@@ -62,48 +89,58 @@ const ProductView = () => {
 
    if (!product) return <p className="p-6">Loading...</p>;
 
-  const handleWishlistToggle = async () => {
-    if (!token) {
-      setAuthMessageWishlist(
-        <>
-          Please{" "}
-          <Link to="/register" className="text-black font-bold underline hover:underline-">
-            login
-          </Link>{" "}
-          to use wishlist
-        </>
+const handleWishlistToggle = async () => {
+  if (!token) {
+    setAuthMessageWishlist(
+      <>
+        Please{" "}
+        <Link to="/register" className="text-black font-bold underline">
+          login
+        </Link>{" "}
+        to use wishlist
+      </>
+    );
+    return;
+  }
+
+  try {
+    if (!liked) {
+      // ADD to wishlist
+      await axios.post(
+        `${API_URL}/wishlist/${product.id}/toggle/`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      return;
+
+      // ✅ LOG ACTIVITY AFTER SUCCESS
+      await axios.post(
+        `${API_URL}/activity/create/`,
+        {
+          product_id: product.id,
+          action: "wishlist",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setLiked(true);
+    } else {
+      // REMOVE from wishlist (NO activity log)
+      await axios.delete(
+        `${API_URL}/wishlist/${product.id}/toggle/`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setLiked(false);
     }
-    try {
-      if (!liked) {
-        // ADD to wishlist
-        await axios.post(
-          `${API_URL}/wishlist/${product.id}/toggle/`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setLiked(true);
-      } else {
-        // REMOVE from wishlist
-        await axios.delete(
-          `${API_URL}/wishlist/${product.id}/toggle/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setLiked(false);
-      }
-    } catch (err) {
-      console.error("Wishlist toggle error", err);
-    }
-  };
+  } catch (err) {
+    console.error("Wishlist toggle error", err);
+  }
+};
 const handleAddToCart = async () => {
   if (!token) {
     setauthMessageCart(
@@ -132,17 +169,26 @@ const handleAddToCart = async () => {
         quantity: 1,
       },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    // ✅ LOG ACTIVITY AFTER SUCCESS
+    await axios.post(
+      `${API_URL}/activity/create/`,
+      {
+        product_id: product.id,
+        action: "add_cart",
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 
     setauthMessageCart("Added to cart successfully!");
-    console.log("Product added to cart");
   } catch (err) {
     const errorMsg = err.response?.data?.error;
-    
+
     if (errorMsg) {
       setauthMessageCart(errorMsg);
 

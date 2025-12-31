@@ -8,6 +8,7 @@ const ChatBox = ({ onClose }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -48,7 +49,23 @@ const ChatBox = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed bottom-24 right-6 w-80 h-[420px] bg-white rounded-xl shadow-xl flex flex-col z-50">
+<div
+  className={`
+    fixed z-50 bg-white shadow-xl flex flex-col rounded-xl transition-all duration-200
+
+    /* MOBILE */
+    ${keyboardOpen 
+      ? "bottom-0 h-[60vh]" 
+      : "bottom-40 h-[360px]"
+    }
+    right-2 w-[94vw]
+
+    /* 🖥 DESKTOP */
+    md:bottom-24 md:right-6 md:w-80 md:h-[420px]
+  `}
+>
+
+
       
       {/* Header */}
       <div className="bg-black text-white p-3 rounded-t-xl flex justify-between items-center">
@@ -108,13 +125,16 @@ const ChatBox = ({ onClose }) => {
 
       {/* Input */}
       <div className="p-2 border-t flex gap-2">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Ask me about products..."
-          className="flex-1 border border-gray-400 rounded px-2 py-1 text-sm"
-        />
+       <input
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onFocus={() => setKeyboardOpen(true)}
+  onBlur={() => setKeyboardOpen(false)}
+  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+  placeholder="Ask me about products..."
+  className="flex-1 border border-gray-400 rounded px-2 py-1 text-sm"
+/>
+
         <button
           onClick={sendMessage}
           className="bg-black text-white px-3 rounded text-sm"

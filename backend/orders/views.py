@@ -134,10 +134,11 @@ class CartView(APIView):
 
         order.calculate_total()
         return Response(OrderSerializer(order).data, status=200)
-    def delete(self, request):
+    
+    def delete(self, request,pk):
         """Remove item from cart"""
         order = get_object_or_404(Order, user=request.user, status='PENDING')
-        item_id = request.data.get('item_id')
+        item_id = pk
         item = get_object_or_404(OrderItem, id=item_id, order=order)
         item.delete()
         order.calculate_total()
@@ -182,31 +183,40 @@ class TotalBillView(APIView):
             },
             status=status.HTTP_200_OK
         )
-
+import uuid
+import time
 # CASHFREE PAYMENT VIEW
 class CashfreePaymentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        order = Order.objects.filter(
-            user=request.user,
-            status='PENDING'
-        ).order_by('-created_at').first()
+        print("CASHFREE REQUEST DATA 👉", request.data)
 
-        if not order:
-            return Response(
-                {"error": "No pending order found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+        phone = request.data.get("phone")
+
+        if not phone:
+            return Response({"error": "Phone number required"}, status=400)
+
+        try:
+            order = Order.objects.filter(
+                user=request.user,
+                status="PENDING"
+            ).latest("created_at")
+        except Order.DoesNotExist:
+            return Response({"error": "No pending order found"}, status=400)
+
+        amount = float(order.total_price)
+        if amount <= 0:
+            return Response({"error": "Invalid order amount"}, status=400)
 
         payload = {
-            "order_id": f"order_{order.id}",
-            "order_amount": float(order.total_price),
+            "order_id": f"order_{order.id}_{uuid.uuid4().hex[:8]}",
+            "order_amount": amount,
             "order_currency": "INR",
             "customer_details": {
                 "customer_id": str(request.user.id),
-                "customer_email": request.user.email or "test@example.com",
-                "customer_phone": "9999999999",
+                "customer_email": request.user.email,
+                "customer_phone": phone,
             },
             "order_meta": {
                 "return_url": "http://localhost:3000/payment-success",
@@ -216,32 +226,93 @@ class CashfreePaymentView(APIView):
         headers = {
             "x-client-id": settings.CASHFREE_CLIENT_ID,
             "x-client-secret": settings.CASHFREE_CLIENT_SECRET,
-            "Content-Type": "application/json"
+            "x-api-version": "2022-09-01",
+            "Content-Type": "application/json",
         }
 
-        response = requests.post(
-        settings.CASHFREE_API_URL,
-        headers=headers,
-        json=payload,
-        timeout=10
-            )
+        print("CASHFREE PAYLOAD 👉", payload)
+        print("CASHFREE URL 👉", settings.CASHFREE_API_URL)
 
-        if response.status_code in (200, 201):
-            data = response.json()
-            return Response({"cashfree": data})
+        # 🔁 Retry logic (sandbox-safe)
+        for attempt in range(2):
+            try:
+                response = requests.post(
+                    settings.CASHFREE_API_URL,
+                    json=payload,
+                    headers=headers,
+                    timeout=15
+                )
+
+                print("CASHFREE STATUS 👉", response.status_code)
+                print("CASHFREE RESPONSE 👉", response.text)
+
+                if response.status_code in [200, 201]:
+                    return Response({
+                        "payment_session_id": response.json()["payment_session_id"],
+                        "order_id": payload["order_id"]
+                    })
+
+            except requests.exceptions.RequestException as e:
+                print("CASHFREE ERROR 👉", str(e))
+
+            time.sleep(1)
 
         return Response(
-            {"error": "Cashfree order creation failed", "details": response.text},
-            status=status.HTTP_400_BAD_REQUEST
+            {"error": "Cashfree timeout, please retry"},
+            status=503
         )
+
     def put(self, request):
-        """Mark order as paid after success callback"""
+        """Mark order as PAID after verification"""
         order_id = request.data.get("order_id")
-        order = get_object_or_404(Order, id=order_id, user=request.user)
+
+        order = get_object_or_404(
+            Order,
+            id=order_id,
+            user=request.user
+        )
 
         order.status = "PAID"
         order.save()
-        return Response({"message": "Payment successful and order marked as PAID"})
+
+        return Response({"message": "Order marked as PAID"})
+
+class CashfreeVerifyView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        order_id = request.query_params.get("order_id")
+
+        if not order_id:
+            return Response({"error": "order_id required"}, status=400)
+
+        headers = {
+            "x-client-id": settings.CASHFREE_CLIENT_ID,
+            "x-client-secret": settings.CASHFREE_CLIENT_SECRET,
+            "x-api-version": "2022-09-01",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.get(
+            f"{settings.CASHFREE_API_URL}/{order_id}",
+            headers=headers
+        )
+
+        data = response.json()
+
+        if data.get("order_status") == "PAID":
+            order = Order.objects.get(
+                user=request.user,
+                id=order_id.replace("order_", "").split("_")[0]
+            )
+            order.status = "PAID"
+            order.save()
+
+            OrderItem.objects.filter(order=order).delete()
+
+            return Response({"status": "success"})
+
+        return Response({"status": "pending"})
 
 
 #  ORDER LIST VIEW
@@ -315,3 +386,6 @@ class AddressByTypeView(APIView):
             {"detail": f"{address_type} address deleted successfully"},
             status=status.HTTP_204_NO_CONTENT
         )
+    
+
+    

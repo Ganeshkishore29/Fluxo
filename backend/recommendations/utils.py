@@ -17,13 +17,15 @@ WEIGHTS = {
     "popularity_fallback": 0.5,     # global popularity weight
 }
 
-def compute_user_scores(user, top_k=8):
+def compute_user_scores(user, top_k=8, category_id=None):
     # Aggregate activities in recent window
+    
     now = timezone.now()
     window = now - timedelta(days=WEIGHTS["recent_decay_days"])
     acts = UserActivity.objects.filter(user=user, timestamp__gte=window)
 
     scores = defaultdict(float)
+    
 
     for a in acts:
         pid = a.product_id
@@ -56,7 +58,7 @@ def compute_user_scores(user, top_k=8):
         try:
             pe = ProductEmbedding.objects.get(product_id=pid)
             emb = pe.get_vector()
-            results = faiss_search(emb, topk=6)  # product_id + score
+            results = faiss_search(emb,6)  # product_id + score
             for r in results:
                 rid = r["product_id"]
                 if rid not in seen:

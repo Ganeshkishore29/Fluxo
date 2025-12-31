@@ -1,5 +1,5 @@
 from django.urls import path
 from .views import ActivityCreateAPIView
 urlpatterns = [ 
-path('activities/', ActivityCreateAPIView.as_view(), name='activities')
+path('activity/create/', ActivityCreateAPIView.as_view(), name='activities')
 ]

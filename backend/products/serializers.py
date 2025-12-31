@@ -45,7 +45,7 @@ class ProductLiteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'thumbnail_url']
+        fields = ['id', 'name', 'price', 'thumbnail_url',"category_id",]
 
     def get_thumbnail_url(self, obj): # method to get the URL of the first image as thumbnail
         first_image = obj.images.first()
