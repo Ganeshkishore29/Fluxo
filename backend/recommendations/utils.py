@@ -1,83 +1,152 @@
-
-import numpy as np
 from collections import defaultdict
-from datetime import timedelta, datetime
+from datetime import timedelta
 from django.utils import timezone
+
 from activities.models import UserActivity
 from products.models import Product, ProductEmbedding
-from products.utils.faiss_index import search as faiss_search  # optional fast search
+from products.utils.faiss_index import search as faiss_search
 
-# Weight settings (tune these)
+
+# -------------------------
+# Weight configuration
+# -------------------------
 WEIGHTS = {
-    "view_time_per_second": 0.02,   # each second gives this weight
+    "view_time_per_second": 0.02,
     "add_to_cart": 3.0,
     "wishlist": 2.0,
     "purchase": 5.0,
-    "recent_decay_days": 14,        # recency window to prioritize recent actions
-    "popularity_fallback": 0.5,     # global popularity weight
+    "recent_decay_days": 14,
+    "popularity_fallback": 0.5,
 }
 
+
 def compute_user_scores(user, top_k=8, category_id=None):
-    # Aggregate activities in recent window
-    
+    """
+    STRICT GUARANTEE:
+    If category_id is provided, ONLY products from that main category
+    can ever be recommended.
+    """
+
     now = timezone.now()
     window = now - timedelta(days=WEIGHTS["recent_decay_days"])
-    acts = UserActivity.objects.filter(user=user, timestamp__gte=window)
+
+    # ------------------------------------------------
+    # 1️⃣ ALLOWED PRODUCT SET (SOURCE OF TRUTH)
+    # ------------------------------------------------
+    if not category_id:
+        return []
+
+    allowed_product_ids = set(
+        Product.objects.filter(
+            sub_category__main_category_id=category_id
+        ).values_list("id", flat=True)
+    )
+
+    if not allowed_product_ids:
+        return []
+
+    # ------------------------------------------------
+    # 2️⃣ Recent user activities (CATEGORY SAFE)
+    # ------------------------------------------------
+    activities = UserActivity.objects.filter(
+        user=user,
+        timestamp__gte=window,
+        product_id__in=allowed_product_ids
+    )
 
     scores = defaultdict(float)
-    
 
-    for a in acts:
-        pid = a.product_id
-        if a.action == UserActivity.VIEW:
-            dur = a.duration_seconds or 0.0
-            scores[pid] += dur * WEIGHTS["view_time_per_second"]
-        elif a.action == UserActivity.ADD_CART:
+    for act in activities:
+        pid = act.product_id
+
+        if act.action == UserActivity.VIEW:
+            scores[pid] += (act.duration_seconds or 0) * WEIGHTS["view_time_per_second"]
+        elif act.action == UserActivity.ADD_CART:
             scores[pid] += WEIGHTS["add_to_cart"]
-        elif a.action == UserActivity.WISHLIST:
+        elif act.action == UserActivity.WISHLIST:
             scores[pid] += WEIGHTS["wishlist"]
-        elif a.action == UserActivity.PURCHASE:
+        elif act.action == UserActivity.PURCHASE:
             scores[pid] += WEIGHTS["purchase"]
 
-    # If no strong signals, fallback to last order/wishlist/cart items aggregated quickly
+    # ------------------------------------------------
+    # 3️⃣ Fallback if no strong signals
+    # ------------------------------------------------
     if not scores:
-        # last purchases (if any)
-        purchases = UserActivity.objects.filter(user=user, action=UserActivity.PURCHASE).order_by('-timestamp')[:5]
-        for p in purchases:
-            scores[p.product_id] += WEIGHTS["purchase"] * 0.5
+        fallback_acts = UserActivity.objects.filter(
+            user=user,
+            action=UserActivity.PURCHASE,
+            product_id__in=allowed_product_ids
+        ).order_by("-timestamp")[:5]
 
-    # Normalize scores and pick top seeds
+        for fa in fallback_acts:
+            scores[fa.product_id] += WEIGHTS["purchase"] * 0.5
+
+    # ------------------------------------------------
+    # 4️⃣ Seed products
+    # ------------------------------------------------
     ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    seed_product_ids = [pid for pid, sc in ranked[:5]]
+    seed_product_ids = [pid for pid, _ in ranked[:5]]
 
-    # Expand seeds using embedding similarity (hybrid)
     recommendations = []
     seen = set(seed_product_ids)
+
+    # ------------------------------------------------
+    # 5️⃣ FAISS expansion (HARD CATEGORY BLOCK)
+    # ------------------------------------------------
     for pid in seed_product_ids:
-        # try FAISS search for similar
         try:
             pe = ProductEmbedding.objects.get(product_id=pid)
             emb = pe.get_vector()
-            results = faiss_search(emb,6)  # product_id + score
+
+            # ❗ FIXED: positional argument
+            results = faiss_search(emb, 8)
+
             for r in results:
                 rid = r["product_id"]
+
+                if rid not in allowed_product_ids:
+                    continue
+
                 if rid not in seen:
                     recommendations.append((rid, r["score"]))
                     seen.add(rid)
+
         except ProductEmbedding.DoesNotExist:
             continue
 
-    # If recommendations less than needed, add globally popular products
+    # ------------------------------------------------
+    # 6️⃣ Popularity fallback (CATEGORY SAFE)
+    # ------------------------------------------------
     if len(recommendations) < top_k:
-        # simple popularity metric: number of purchases in DB (or product.popularity field)
-        pop_qs = Product.objects.order_by('-popularity')[:top_k*2]  # if you have popularity field
-        for p in pop_qs:
+        popular_qs = Product.objects.filter(
+            id__in=allowed_product_ids
+        ).order_by("-popularity")
+
+        for p in popular_qs:
             if p.id not in seen:
                 recommendations.append((p.id, WEIGHTS["popularity_fallback"]))
                 seen.add(p.id)
+
             if len(recommendations) >= top_k:
                 break
 
-    # Build final list of product ids with optional scores
-    final = [pid for pid, sc in recommendations][:top_k]
-    return final
+    # ------------------------------------------------
+    # 7️⃣ Final result
+    # ------------------------------------------------
+    final_product_ids = [pid for pid, _ in recommendations][:top_k]
+
+    # 🔍 DEBUG (keep temporarily)
+    print("CATEGORY ID:", category_id)
+    print("ALLOWED PRODUCTS:", len(allowed_product_ids))
+
+    for pid in final_product_ids:
+        p = Product.objects.get(id=pid)
+        print(
+            "RECOMMENDED:",
+            p.id,
+            p.name,
+            "MAIN_CATEGORY:",
+            p.sub_category.main_category_id
+        )
+
+    return final_product_ids

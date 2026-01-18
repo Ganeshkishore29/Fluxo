@@ -21,7 +21,7 @@ class RecommendationAPIView(APIView):
 
         qs = Product.objects.filter(id__in=product_ids)
 
-        # ✅ FIX: filter through sub_category → main_category
+## filter through sub_category → main_category
         if category_id:
             qs = qs.filter(
                 sub_category__main_category_id=category_id
