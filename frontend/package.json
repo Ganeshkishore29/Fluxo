@@ -16,12 +16,13 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "node --max_old_space_size=8192 node_modules/react-scripts/scripts/start.js",
-    "build": "node --max_old_space_size=8192 node_modules/react-scripts/scripts/build.js",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+ "scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint"
+}
+,
   "eslintConfig": {
     "extends": [
       "react-app",
