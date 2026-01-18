@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const SimilarProduct = ({ product }) => {
+const SmallProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const Image = product.thumbnail_url;
@@ -22,4 +22,4 @@ const SimilarProduct = ({ product }) => {
   );
 };
 
-export default SimilarProduct;
+export default SmallProductCard;

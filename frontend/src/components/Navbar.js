@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
 import SearchPage from "../pages/Search";
+import { useNavigate } from "react-router-dom";
+
+import NewInCat from "./NewInCat";
 
 const API_URL = "http://localhost:8000/api";
 
@@ -12,13 +15,15 @@ const Navbar=() => {
   const [subCategories, setSubCategories] = useState([]);
   const [hoveredCategoryID, setHoveredCategoryID] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
+const navigate=useNavigate()
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const categoryContainerRef = useRef(null);
   const megaMenuRef = useRef(null);
 const hoverZoneRef = useRef(null);
 const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 const [activeMobileCategory, setActiveMobileCategory] = useState(null);
+const [recommendations, setRecommendations] = useState([]);
+const [recLoading, setRecLoading] = useState(false);
 
   useEffect(() => {
     
@@ -50,7 +55,29 @@ useEffect(() => {
 
 
   const currentCategory = categories.find((c) => c.id === hoveredCategoryID);
-  const isAuthenticated = !!localStorage.getItem("access_token");
+ useEffect(() => {
+  if (!token || !hoveredCategoryID) {
+    setRecommendations([]);
+    return;
+  }
+
+  setRecLoading(true);
+
+  axios
+    .get(
+      `${API_URL}/recommendations/?k=8&category_id=${hoveredCategoryID}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    .then((res) => {
+      setRecommendations(res.data.results || []);
+      setRecLoading(false);
+    })
+    .catch(() => {
+      setRecommendations([]);
+      setRecLoading(false);
+    });
+}, [hoveredCategoryID, token]);
+ const recom=recommendations.slice(6,8)
 
   const handleSubCategoryClick = () => {
     setTimeout(() => {
@@ -130,7 +157,7 @@ useEffect(() => {
                 <li key={sub.id}>
                   <Link
                     to={`/product-list/${sub.id}`}
-                    className="text-lg font-hnm hover:text-gray-600 block py-2"
+                    className="  md:text-lg sm:text-xs font-hnm hover:text-gray-600 block py-2"
                     onMouseDown={handleSubCategoryClick}
                   >
                     {sub.name}
@@ -160,11 +187,60 @@ useEffect(() => {
         </div>
 
         {/* RIGHT */}
-        <div className="p-8 bg-gradient-to-br from-blue-50/50 to-indigo-50/50">
-          <h4 className="mb-6 font-semibold uppercase text-sm tracking-wider text-gray-800">
-            Recommended
-          </h4>
-        </div>
+{/* RIGHT */}
+<div className="p-6 lg:p-8 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 h-full flex flex-col">
+  
+  {/* Header */}
+  <div className="mb-5 flex items-center justify-between">
+    <h4 className="font-semibold uppercase text-sm tracking-wider text-gray-800">
+      Recommended
+    </h4>
+
+    <span className="text-xs text-gray-500 hidden lg:block">
+      Curated picks
+    </span>
+  </div>
+
+  {/* Content */}
+  {recLoading ? (
+    <div className="grid grid-cols-2 gap-4">
+      {Array(4).fill(0).map((_, i) => (
+        <div
+          key={i}
+          className="h-36 md:h-40 bg-gray-200 animate-pulse rounded-lg"
+        />
+      ))}
+    </div>
+  ) : (
+    <div className="grid grid-cols-2 gap-4 md:gap-5">
+      {recom.map((product) => (
+        <NewInCat
+          key={product.id}
+          product={product}
+          useThumbnail={true}
+        />
+      ))}
+    </div>
+  )}
+
+  {/* Optional CTA */}
+  <div className="mt-auto pt-6 hidden lg:block">
+    <button
+  className="w-full text-sm font-medium py-2 border border-gray-300 hover:bg-gray-100 transition"
+  onClick={() =>
+    navigate(`/recommendations`, {
+      state: {
+        categoryId: hoveredCategoryID
+      },
+    })
+  }
+>
+  View More
+</button>
+  </div>
+</div>
+
+
       </div>
     </div>
   )}

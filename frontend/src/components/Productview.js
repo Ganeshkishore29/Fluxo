@@ -1,9 +1,9 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState ,useMemo} from "react";
 import axios from "axios";
 import { Heart, Plus } from "lucide-react";
 import { getToken } from "../utils/PrivateRoute";
-import SimilarProduct from "./SimilarProduct";
+import SmallProductCard from "./SmallProductCard";
 
 
 const API_URL = "http://localhost:8000/api";
@@ -19,19 +19,26 @@ const ProductView = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [outOfStockSizes, setOutOfStockSizes] = useState([]);
   const[similarProducts,setSimilarProducts]=useState([])
+  const [subCategories, setSubCategories] = useState([]);
+const [recommendations, setRecommendations] = useState([]);
+
+const [mainCategories, setMainCategories] = useState([]);
 
   const authMessage = authMessageCart || authMessageWishlist
   const token = getToken();
   useEffect(() => {
     axios
       .get(`${API_URL}/products/${id}/`)
-      .then((res) => setProduct(res.data))
+      .then((res) => {
+        setProduct(res.data);
+        console.log("PRODUCT API RESPONSE ", res.data);
+      })
       .catch((err) => console.error("Product fetch error", err));
 
      axios
   .get(`${API_URL}/similar-product/${id}/`)
   .then((res) => {
-    console.log("SIMILAR PRODUCT API RESPONSE ", res.data);
+    
     setSimilarProducts(
       Array.isArray(res.data) ? res.data : [res.data]
     );
@@ -87,7 +94,6 @@ useEffect(() => {
       .catch(() => setLiked(false));
   }, [id, token]);
 
-   if (!product) return <p className="p-6">Loading...</p>;
 
 const handleWishlistToggle = async () => {
   if (!token) {
@@ -114,7 +120,7 @@ const handleWishlistToggle = async () => {
         }
       );
 
-      // ✅ LOG ACTIVITY AFTER SUCCESS
+      // LOG ACTIVITY AFTER SUCCESS
       await axios.post(
         `${API_URL}/activity/create/`,
         {
@@ -141,6 +147,7 @@ const handleWishlistToggle = async () => {
     console.error("Wishlist toggle error", err);
   }
 };
+
 const handleAddToCart = async () => {
   if (!token) {
     setauthMessageCart(
@@ -173,7 +180,7 @@ const handleAddToCart = async () => {
       }
     );
 
-    // ✅ LOG ACTIVITY AFTER SUCCESS
+    // LOG ACTIVITY AFTER SUCCESS
     await axios.post(
       `${API_URL}/activity/create/`,
       {
@@ -204,7 +211,60 @@ const handleAddToCart = async () => {
   }
 };
 
+{/* FETCH MAIN AND SUB CATEGORIES FOR DEDUCING CATEGORY ID */}
+useEffect(() => {
+  axios
+    .get(`${API_URL}/main-categories/`)
+    .then(res => setMainCategories(res.data))
+    .catch(console.error);
+}, []);
+{/* FETCH MAIN AND SUB CATEGORIES FOR DEDUCING CATEGORY ID */}
+useEffect(() => {
+  axios
+    .get(`${API_URL}/sub-categories/`)
+    .then(res => setSubCategories(res.data))
+    .catch(console.error);
+}, []);
+{/* FETCH MAIN AND SUB CATEGORIES FOR DEDUCING CATEGORY ID */}
+const categoryId = useMemo(() => {
+  if (!product || subCategories.length === 0 || mainCategories.length === 0)
+    return null;
 
+  const subCat = subCategories.find(
+    sc => sc.name === product.sub_category
+  );
+  if (!subCat) return null;
+
+  // subCat.main_category is "men" or "ladies"
+  const mainCat = mainCategories.find(
+    mc => mc.name.toLowerCase() === subCat.main_category.toLowerCase()
+  );
+
+  return mainCat?.id ?? null; // ← ALWAYS number
+}, [product, subCategories, mainCategories]);
+
+console.log("DEDUCED CATEGORY ID:", categoryId);
+
+useEffect(() => {
+  if (!token || !categoryId) return;
+
+  axios
+    .get(
+      `${API_URL}/recommendations/?k=8&category_id=${categoryId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    .then((res) => {
+      const data = res.data.results || [];
+      setRecommendations(data);
+  
+    })
+    .catch((err) =>
+      console.error("Recommendation fetch error", err)
+    );
+}, [token, categoryId]);
+const limitedRecommendations = recommendations.slice(0, 6);
+
+  if (!product) return <p className="p-6">Loading...</p>;
 
     return (
       <>
@@ -284,18 +344,24 @@ const handleAddToCart = async () => {
           }}
         >
           {/* NAME + HEART */}
-          <div className="flex items-center justify-between pr-2">
+<div className="flex items-start sm:items-center justify-between pr-2 gap-2">
 
 
-            <h1 className="text-2xl md:text-3xl font-semibold leading-tight">
-              {product.name}
-            </h1>
+            <h1 className="
+  text-lg sm:text-2xl md:text-3xl
+  font-semibold leading-tight
+  line-clamp-2 sm:line-clamp-none
+">
+  {product.name}
+</h1>
+
 
 
             <button
-              onClick={handleWishlistToggle}
-              className="ml-4 flex items-center"
-            >
+  onClick={handleWishlistToggle}
+  className="ml-2 sm:ml-4 flex items-center shrink-0"
+>
+
               <Heart
                 size={25}
                 className={liked ? "fill-black stroke-black" : "stroke-black"}
@@ -423,6 +489,8 @@ const handleAddToCart = async () => {
         </div>
 
       </div>
+
+{/* SIMILAR PRODUCTS */}      
 <div className="mt-10">
   {/* TITLE */}
   <h1 className="mx-5 mb-3 text-lg font-hnm tracking-wide">
@@ -433,7 +501,7 @@ const handleAddToCart = async () => {
   <div
     className="
       flex gap-4 overflow-x-auto px-4 pb-2
-      sm:grid sm:grid-cols-6 sm:gap-0 sm:overflow-visible
+      sm:grid sm:grid-cols-6 sm:gap-0 sm:px-0 sm:overflow-visible
     "
   >
     {similarProducts.map((product) => (
@@ -441,7 +509,32 @@ const handleAddToCart = async () => {
         key={product.id}
         className="flex-shrink-0 w-[65vw] sm:w-auto"
       >
-        <SimilarProduct product={product} />
+        <SmallProductCard product={product} />
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* RECOMMENDED PRODUCTS */}
+<div className="mt-10">
+  {/* TITLE */}
+  <h1 className="mx-5 mb-3 text-lg font-hnm tracking-wide">
+    Recommended for You
+  </h1>
+
+  {/* PRODUCTS */}
+  <div
+    className="
+      flex gap-4 overflow-x-auto px-4 pb-2
+      sm:grid sm:grid-cols-6 sm:gap-0 sm:overflow-visible sm:px-0
+    "
+  >
+    {limitedRecommendations.map((product) => (
+      <div
+        key={product.id}
+        className="flex-shrink-0 w-[65vw] sm:w-auto  md:w-auto"
+      >
+        <SmallProductCard product={product} />
       </div>
     ))}
   </div>

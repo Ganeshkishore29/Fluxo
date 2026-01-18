@@ -29,15 +29,12 @@ const token = getToken()
 
 /* 1️⃣ Fetch recommendations (personalized) */
 useEffect(() => {
-  if (!token) return;
+  if (!token || !id) return;
 
   axios
-    .get(
-      `${API_URL}/recommendations/?k=8&category_id=${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    )
+    .get(`${API_URL}/recommendations/?k=8&category_id=${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((res) => {
       setRecommendations(res.data.results);
     })
@@ -63,6 +60,7 @@ useEffect(() => {
     );
 }, [id]);
 
+
 /* 3️⃣ Fetch category products */
 useEffect(() => {
   if (subCat.length === 0) {
@@ -84,15 +82,10 @@ useEffect(() => {
     });
 }, [subCat]);
 
-/* 4️⃣ Filter recommendations by category */
-const filteredRecommendations =
-  subCat.length === 0
-    ? []
-    : recommendations.filter((p) =>
-        subCat.some((sc) => sc.id === p.sub_category)
-      );
 
-const limitedRecommendations = filteredRecommendations.slice(0, 4);
+/* 4️⃣ Filter recommendations by category */
+
+const limitedRecommendations = recommendations.slice(0, 4);
 
 
 
@@ -181,7 +174,7 @@ const limitedRecommendations = filteredRecommendations.slice(0, 4);
   <div
     className="
       flex gap-4 overflow-x-auto pb-2
-      sm:grid sm:grid-cols-6 sm:overflow-visible
+      sm:grid sm:grid-cols-6 sm:gap-1 sm:px-0 sm:overflow-visible
     "
   >
     {products.slice(0, visibleCount).map((product) => (
@@ -195,23 +188,28 @@ const limitedRecommendations = filteredRecommendations.slice(0, 4);
   </div>
 
 
-{/* CATEGORY PRODUCTS */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-  {prod.slice(0, 4).map((product) => (
-    <ProductCard key={product.id} product={product} />
-  ))}
-</div>
-
 {/* RECOMMENDED FOR YOU */}
 {limitedRecommendations.length > 0 && (
   <div className="mt-10">
-    <h2 className="mb-4 text-lg font-semibold">
-      Recommended for You
-    </h2>
+     <div
+    className="flex items-center justify-between cursor-pointer mb-3"
+     onClick={() =>
+    navigate(`/recommendations`, {
+      state: {
+        categoryId: categoryId,
+      },
+    })
+  }
+  >
+    <p className="text-lg font-hnm tracking-wide">
+      RECOMMENDED FOR YOU
+    </p>
+    <ArrowRight size={30} />
+  </div>
 
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-4">
       {limitedRecommendations.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} disableHover={true}  />
       ))}
     </div>
   </div>

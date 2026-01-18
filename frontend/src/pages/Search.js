@@ -92,7 +92,7 @@ const startVoiceSearch = () => {
 };
 
 
-  /* 🖼 IMAGE SEARCH */
+  /*  IMAGE SEARCH */
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -230,7 +230,7 @@ const startVoiceSearch = () => {
 
       {/* IMAGE RESULTS */}
       {imageResults.length > 0 && (
-        <div className="h-[45vh] overflow-y-auto pr-2">
+        <div className="sm:h-[45vh] md:h-[45vh] h-[65vh] overflow-y-auto pr-2">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {imageResults.map((p) => (
               <div

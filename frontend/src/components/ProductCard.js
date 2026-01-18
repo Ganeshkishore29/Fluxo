@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 
 const API_URL="http://localhost:8000/api";
 
-const ProductCard = ({ product, onRemoveFromWishlist }) => {
+const ProductCard = ({ product, onRemoveFromWishlist, disableHover = false }) => {
   const [hovered, setHovered] = useState(false);
   const [liked, setLiked] = useState(false);
   const token = getToken();
@@ -14,6 +14,12 @@ const ProductCard = ({ product, onRemoveFromWishlist }) => {
 
   const firstImage = product.images?.[0]?.images;
   const secondImage = product.images?.[1]?.images;
+
+const imageSrc = disableHover
+  ? `http://localhost:8000${product.thumbnail_url}`
+  : `http://localhost:8000${
+      hovered && secondImage ? secondImage : firstImage
+    }`;
 
   useEffect(() => {
     if (!token || !product?.id) return;
@@ -55,23 +61,27 @@ const ProductCard = ({ product, onRemoveFromWishlist }) => {
 
   return (
     <div
-      className="overflow-hidden cursor-pointer"
-      onMouseEnter={() => window.innerWidth >= 768 && setHovered(true)}
-      onMouseLeave={() => window.innerWidth >= 768 && setHovered(false)}
-      onClick={() => navigate(`/product/${product.id}`)}
-    >
+  className="overflow-hidden cursor-pointer"
+  onMouseEnter={() =>
+    !disableHover && window.innerWidth >= 768 && setHovered(true)
+  }
+  onMouseLeave={() =>
+    !disableHover && window.innerWidth >= 768 && setHovered(false)
+  }
+  onClick={() => navigate(`/product/${product.id}`)}
+>
+
       {/* IMAGE */}
       <div className="w-full h-[45vh] md:h-[70vh] overflow-hidden">
-        {firstImage && (
-          <img
-            src={`http://localhost:8000${
-              hovered && secondImage ? secondImage : firstImage
-            }`}
-            alt={product.name}
-            className="w-full h-full object-cover transition-all duration-300"
-          />
-        )}
-      </div>
+  {imageSrc && (
+    <img
+      src={imageSrc}
+      alt={product.name}
+      className="w-full h-full object-cover transition-all duration-300"
+    />
+  )}
+</div>
+
 
       {/* DETAILS */}
       <div className="p-2 md:p-3">
