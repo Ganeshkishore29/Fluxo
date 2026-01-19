@@ -40,4 +40,8 @@
       "last 1 safari version"
     ]
   }
+,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
