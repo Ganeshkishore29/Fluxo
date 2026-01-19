@@ -1,16 +1,22 @@
-import { useParams, useNavigate } from "react-router-dom";
+"use client";
+import { useParams} from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {  ArrowRight, LucideArrowBigRightDash } from "lucide-react";
 import NewInCat from "../components/NewInCat";
 import SubcatBanner from "../components/SubcatBanner";
 import ProductCard from "../components/ProductCard";
-import { getToken } from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
+
+import { useRouter} from 'next/navigation';
+
 
 
 const API_URL = "http://localhost:8000/api";
 
 const CategoryPage = () => {
+  const router = useRouter();
+
   const { id } = useParams();
   const categoryId = id ?? 2;
 const[products,setProducts]=useState([])
@@ -18,14 +24,15 @@ const[products,setProducts]=useState([])
   const [subCatBanner,SetsubCatBanner]=useState([])
 const ITEMS_PER_ROW = 6;
 const visibleCount =Math.floor(products.length / ITEMS_PER_ROW) * ITEMS_PER_ROW;
-
-  const navigate = useNavigate();
+const [token, setToken] = useState(null);
 const [recommendations, setRecommendations] = useState([]);
 const [subCat, setSubCat] = useState([]);
 const [prod, setProd] = useState([]);
 const [loading, setLoading] = useState(true);
 
-const token = getToken()
+useEffect(() => {
+    setToken(getToken());
+  }, []);
 
 /* 1️⃣ Fetch recommendations (personalized) */
 useEffect(() => {
@@ -122,7 +129,7 @@ const limitedRecommendations = recommendations.slice(0, 4);
             className="w-full h-full object-cover"
           />
           <span
-            onClick={() => navigate(`/product/${banners[0].product_id}`)}
+            onClick={() => router.push(`/product/${banners[0].product_id}`)}
             className="
                       absolute bottom-[calc(10vh+40px)]
                       left-[calc(60vw+70px)]
@@ -162,7 +169,7 @@ const limitedRecommendations = recommendations.slice(0, 4);
   {/* HEADER */}
   <div
     className="flex items-center justify-between cursor-pointer mb-3"
-    onClick={() => navigate(`/NewIn/${categoryId}`)}
+    onClick={() => router.push(`/NewIn/${categoryId}`)}
   >
     <p className="text-lg font-hnm tracking-wide">
       NEW IN
@@ -194,7 +201,7 @@ const limitedRecommendations = recommendations.slice(0, 4);
      <div
     className="flex items-center justify-between cursor-pointer mb-3"
      onClick={() =>
-    navigate(`/recommendations`, {
+    router.push(`/recommendations`, {
       state: {
         categoryId: categoryId,
       },

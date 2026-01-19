@@ -1,14 +1,17 @@
-import React from 'react'
-import ProductView from '../components/Productview'
-import { useParams } from 'react-router-dom';
+"use client";
+
+import React from "react";
+import { useSearchParams } from "next/navigation";
+import ProductView from "../components/Productview";
 
 const Product = () => {
-    const { id } = useParams();
-  return (
-    <>
-    <ProductView id={id} />
-    </>
-  )
-}
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
-export default Product
+
+  if (!id) return null;
+
+  return <ProductView id={id} />;
+};
+
+export default Product;

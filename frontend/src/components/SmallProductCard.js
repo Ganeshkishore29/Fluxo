@@ -1,8 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const SmallProductCard = ({ product }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const Image = product.thumbnail_url;
 
@@ -11,7 +11,7 @@ const SmallProductCard = ({ product }) => {
   return (
     <div
       className="w-full h-[35vh] md:h-[40vh] overflow-hidden cursor-pointer"
-      onClick={() => navigate(`/product/${product.id}`)}
+      onClick={() => router.push(`/product/${product.id}`)}
     >
       <img
         src={`http://localhost:8000${Image}`}

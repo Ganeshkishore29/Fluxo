@@ -1,10 +1,12 @@
+"use client";
 import React, { useEffect, useState } from 'react'
-import { getToken } from '../utils/PrivateRoute'
+import ProtectedPage from '../utils/PrivateRoute'
+import { getToken } from '../utils/auth'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
+import  Link  from 'next/link'
 import CartCard from '../components/CartCard'
 import { Plus, Minus, Trash2 } from "lucide-react";
-
+ import ClientOnly from "../components/ClientOnly";
 import TotalBill from '../components/TotalBill'
 
 
@@ -17,7 +19,12 @@ const CartPage = () => {
   const [checkoutData, setCheckoutData] = useState(null);
 
 
-  const token = getToken()
+ const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
+
  useEffect(() => {
   if (!token) return;
 
@@ -74,7 +81,7 @@ const updateCartItem = async (itemId, action) => {
 
 
 
-  return (
+  return (<ProtectedPage>
     <div>
  <div>
   {/* TITLE */}
@@ -151,7 +158,12 @@ const updateCartItem = async (itemId, action) => {
 
     {/* RIGHT: Totalbill (DESKTOP) */}
     <div className="hidden lg:block">
-     <TotalBill checkoutData={checkoutData} />
+    
+
+<ClientOnly>
+  <TotalBill checkoutData={checkoutData} />
+</ClientOnly>
+
 
     </div>
 
@@ -165,7 +177,7 @@ const updateCartItem = async (itemId, action) => {
             Your cart is empty. Add items to your cart to see them here.
           </p>
 
-          <Link to="/">
+          <Link href="/">
           <button
             className="
               mt-4
@@ -211,7 +223,7 @@ const updateCartItem = async (itemId, action) => {
 )}
 
 
-    </div>
+    </div></ProtectedPage>
   )
 }
 

@@ -1,6 +1,7 @@
+"use client";
 import { useState,useEffect } from "react";
-import { getToken } from "../utils/PrivateRoute";
-import { useNavigate } from "react-router-dom";
+import { getToken } from "../utils/auth";
+import {useRouter} from 'next/navigation';
 import axios from "axios";
 import { Heart } from "lucide-react";
 
@@ -9,8 +10,13 @@ const API_URL="http://localhost:8000/api";
 const ProductCard = ({ product, onRemoveFromWishlist, disableHover = false }) => {
   const [hovered, setHovered] = useState(false);
   const [liked, setLiked] = useState(false);
-  const token = getToken();
-  const navigate = useNavigate();
+  const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
+
+  const router = useRouter();
 
   const firstImage = product.images?.[0]?.images;
   const secondImage = product.images?.[1]?.images;
@@ -68,7 +74,7 @@ const imageSrc = disableHover
   onMouseLeave={() =>
     !disableHover && window.innerWidth >= 768 && setHovered(false)
   }
-  onClick={() => navigate(`/product/${product.id}`)}
+  onClick={() => router.push(`/product/${product.id}`)}
 >
 
       {/* IMAGE */}

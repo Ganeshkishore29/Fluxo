@@ -1,7 +1,8 @@
 
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
 const API_URL = "http://localhost:8000/api";
@@ -10,7 +11,7 @@ const Login = ({ email: prefilledEmail = "" }) => {
   const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const router=useRouter();
   const location = useLocation();
 
   const handleSubmit = async (e) => {
@@ -32,7 +33,7 @@ const Login = ({ email: prefilledEmail = "" }) => {
       console.log("Login successful:", response.data);
 
       const redirectTo = location.state?.from?.pathname || "/profile";
-      navigate(redirectTo, { replace: true });
+      router.push(redirectTo, { replace: true });
     } catch (err) {
       console.error("Login error:", err);
       alert("Login failed. Please check your credentials.");

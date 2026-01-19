@@ -1,13 +1,15 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "../components/ProductCard";
 
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "next/navigation";
 
 const API_URL = "http://localhost:8000/api";
 
 const NewInpage = () => {
-  const {categoryId}=useParams()
+  const searchParams = useSearchParams();
+const categoryId = searchParams.get("categoryId");
   const [products, setProducts] = useState([]);
 
   useEffect(() => {

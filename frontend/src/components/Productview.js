@@ -1,8 +1,10 @@
-import { Link, useParams } from "react-router-dom";
+"use client";
+import {  useParams } from"next/navigation";
+import  Link  from "next/link";
 import { useEffect, useRef, useState ,useMemo} from "react";
 import axios from "axios";
 import { Heart, Plus } from "lucide-react";
-import { getToken } from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
 import SmallProductCard from "./SmallProductCard";
 
 
@@ -25,7 +27,12 @@ const [recommendations, setRecommendations] = useState([]);
 const [mainCategories, setMainCategories] = useState([]);
 
   const authMessage = authMessageCart || authMessageWishlist
-  const token = getToken();
+ const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
+
   useEffect(() => {
     axios
       .get(`${API_URL}/products/${id}/`)

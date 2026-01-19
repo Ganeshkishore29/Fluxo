@@ -1,6 +1,6 @@
 import ProductCard from "../components/ProductCard";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "next/navigation";
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api";

@@ -1,10 +1,11 @@
+"use client";
 import {Search,Heart,ShoppingBag,User,Menu,X,ArrowRight} from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import Link  from"next/link";
 import axios from "axios";
-import { getToken } from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
 import SearchPage from "../pages/Search";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import NewInCat from "./NewInCat";
 
@@ -15,7 +16,7 @@ const Navbar=() => {
   const [subCategories, setSubCategories] = useState([]);
   const [hoveredCategoryID, setHoveredCategoryID] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-const navigate=useNavigate()
+const router=useRouter();
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const categoryContainerRef = useRef(null);
   const megaMenuRef = useRef(null);
@@ -38,7 +39,11 @@ const [recLoading, setRecLoading] = useState(false);
       });
   }, []);
 
-  const token = getToken();
+ const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
 
 useEffect(() => {
   const categoryId = hoveredCategoryID || activeMobileCategory;
@@ -126,7 +131,7 @@ useEffect(() => {
     <ul className="flex gap-4 py-4 px-5">
       {categories.map((cat) => (
         <Link
-          to={`/main-categories/${cat.id}`}
+          href={`/main-categories/${cat.id}`}
           key={cat.id}
           className="cursor-pointer pl-4 font-hnm font-medium uppercase hover:text-gray-500 transition-colors py-2 px-2"
           onMouseEnter={() => setHoveredCategoryID(cat.id)}
@@ -156,7 +161,7 @@ useEffect(() => {
               subCategories.map((sub) => (
                 <li key={sub.id}>
                   <Link
-                    to={`/product-list/${sub.id}`}
+                    href={`/product-list/${sub.id}`}
                     className="  md:text-lg sm:text-xs font-hnm hover:text-gray-600 block py-2"
                     onMouseDown={handleSubCategoryClick}
                   >
@@ -176,7 +181,7 @@ useEffect(() => {
     Join with us to get a better experience
   </p>
   <Link 
-    to="/register" 
+    href="/register" 
     className="inline-block px-2 py-1 bg-black text-white text-sm hover:bg-gray-900 hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 shadow-md"
   >
     login / register  
@@ -228,7 +233,7 @@ useEffect(() => {
     <button
   className="w-full text-sm font-medium py-2 border border-gray-300 hover:bg-gray-100 transition"
   onClick={() =>
-    navigate(`/recommendations`, {
+    router.push(`/recommendations`, {
       state: {
         categoryId: hoveredCategoryID
       },
@@ -256,13 +261,13 @@ useEffect(() => {
   <Search size={20} />
 </button>
 
-    <Link to={'/profile'}>
+    <Link href={'/profile'}>
       <User size={20} />
     </Link>
-    <Link to="/wishlist">
+    <Link href="/wishlist">
       <Heart size={20} />
     </Link>
-    <Link to='/cart'>
+    <Link href='/cart'>
     <ShoppingBag size={20} />
     </Link>
   </div>
@@ -273,12 +278,12 @@ useEffect(() => {
   <Search size={20} />
 </button>
 
-    <Link to='/profile'>
+    <Link href={'/profile'}>
     <User size={20}/></Link>
-    <Link to="/wishlist">
+    <Link href="/wishlist">
       <Heart size={20} />
     </Link>
-    <Link to='/cart'><ShoppingBag size={20} /></Link>
+    <Link href='/cart'><ShoppingBag size={20} /></Link>
   </div>
 
   {/* Hamburger */}
@@ -345,7 +350,7 @@ useEffect(() => {
       {/* Auth */}
       {!token && (
         <Link
-          to="/login"
+          href="/login"
           onClick={() => setIsMobileMenuOpen(false)}
           className="block mb-6 text-sm font-medium underline"
         >
@@ -380,7 +385,7 @@ useEffect(() => {
       subCategories.map((sub) => (
         <Link
           key={sub.id}
-          to={`/product-list/${sub.id}`}
+          href={`/product-list/${sub.id}`}
           onClick={() => setIsMobileMenuOpen(false)}
           className="text-sm text-gray-700"
         >
@@ -399,8 +404,8 @@ useEffect(() => {
 
       {/* Bottom icons */}
       <div className="mt-10 flex gap-6">
-        <Link to="/wishlist"><Heart size={20} /></Link>
-        <Link to='/cart'><ShoppingBag size={20} /></Link>
+        <Link href="/wishlist"><Heart size={20} /></Link>
+        <Link href='/cart'><ShoppingBag size={20} /></Link>
        <button onClick={() => setIsSearchOpen(true)}>
   <Search size={20} />
 </button>

@@ -1,10 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
+
 
 const NewInCat = ({
   product,
   useThumbnail = false,  
 }) => {
-  const navigate = useNavigate();
+  const router=useRouter();
 
   const imageSrc = useThumbnail
     ? product.thumbnail_url
@@ -17,7 +18,7 @@ const NewInCat = ({
   return (
     <div
       className="w-full h-[30vh] md:h-[40vh] overflow-hidden cursor-pointer"
-      onClick={() => navigate(`/product/${product.id}`)}
+      onClick={() => router.push(`/product/${product.id}`)}
     >
       {imageSrc && (
         <img

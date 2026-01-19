@@ -1,0 +1,16 @@
+{
+  "/CartPage": "pages/CartPage.js",
+  "/CategoryPage": "pages/CategoryPage.js",
+  "/Checkout": "pages/Checkout.js",
+  "/NewInPage": "pages/NewInPage.js",
+  "/Product": "pages/Product.js",
+  "/ProductList": "pages/ProductList.js",
+  "/Profile": "pages/Profile.js",
+  "/Recommendations": "pages/Recommendations.js",
+  "/Register": "pages/Register.js",
+  "/Search": "pages/Search.js",
+  "/Wishlist": "pages/Wishlist.js",
+  "/_app": "pages/_app.js",
+  "/_document": "pages/_document.js",
+  "/_error": "pages/_error.js"
+}

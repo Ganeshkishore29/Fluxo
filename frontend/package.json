@@ -16,12 +16,13 @@
     "react-router-dom": "^7.6.2",
     "web-vitals": "^2.1.4"
   },
- "scripts": {
+"scripts": {
   "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "lint": "next lint"
+  "build": "set NEXT_DISABLE_TURBOPACK=1 && set NODE_OPTIONS=--max-old-space-size=4096 && next build",
+  "start": "next start"
 }
+
+
 ,
   "eslintConfig": {
     "extends": [

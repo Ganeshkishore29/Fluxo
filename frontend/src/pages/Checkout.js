@@ -1,12 +1,19 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getToken } from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
 import { Trash2 } from "lucide-react";
 
 const API_URL = "http://localhost:8000/api";
 
 const Checkout = () => {
-  const token = getToken();
+  
+  const [token, setToken] = useState(null);
+    useEffect(() => {
+    const t = getToken(); // localStorage is SAFE here
+    setToken(t);
+  }, []);
+  
 
   const headers = {
     Authorization: `Bearer ${token}`,

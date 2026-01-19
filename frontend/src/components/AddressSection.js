@@ -1,6 +1,7 @@
+"use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { getToken } from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
 const API_URL = "http://localhost:8000/api";
 
 const AddressSection = ({ onSelect }) => {
@@ -16,7 +17,12 @@ const AddressSection = ({ onSelect }) => {
     pincode: "",
   });
 
-  const token = getToken()
+  const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
+
 
   useEffect(() => {
     axios

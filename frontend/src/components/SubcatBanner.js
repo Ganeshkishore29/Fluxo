@@ -1,15 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const SubcatBanner = ({ subcat, align }) => {
   const image = subcat.banner_image;
-  const navigate = useNavigate();
+  const router = useRouter();
 
   if (!image) return null;
 
   return (
     <div
       className="w-full flex flex-col cursor-pointer"
-      onClick={() => navigate(`/product-list/${subcat.id}`)}
+      onClick={() => router.push(`/product-list/${subcat.id}`)}
     >
       {/* IMAGE */}
       <div className="relative w-full h-[45vh] md:h-[70vh] lg:h-[88vh] overflow-hidden">

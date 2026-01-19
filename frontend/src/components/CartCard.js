@@ -1,7 +1,8 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { getToken } from "../utils/PrivateRoute";
+import { useRouter } from "next/navigation";
+import { getToken } from "../utils/auth";
 import axios from "axios";
 
 const API_URL = "http://localhost:8000/api";
@@ -9,7 +10,7 @@ const API_URL = "http://localhost:8000/api";
 const CartCard = ({ product, size, Qty }) => {
   const Image = product.images?.[0]?.images;
   const [liked, setLiked] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const token = getToken();
 
   
@@ -57,7 +58,7 @@ const CartCard = ({ product, size, Qty }) => {
 
   return (
     <div
-      onClick={() => navigate(`/product/${product.id}`)}
+      onClick={() => router.push(`/product/${product.id}`)}
       className="flex gap-4 border p-3 cursor-pointer hover:shadow-md transition"
     >
       {/* IMAGE */}

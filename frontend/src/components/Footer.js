@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import  Link  from "next/link";
 
 const Footer = () => {
   return (
@@ -29,8 +29,8 @@ const Footer = () => {
               Categories
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link to="/main-categories/1" className="hover:text-white">Men</Link></li>
-              <li><Link to="/main-categories/2" className="hover:text-white">Ladies</Link></li>
+              <li><Link href="/main-categories/1" className="hover:text-white">Men</Link></li>
+              <li><Link href="/main-categories/2" className="hover:text-white">Ladies</Link></li>
             </ul>
           </div>
 
@@ -40,10 +40,10 @@ const Footer = () => {
               Quick Links
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link to="/" className="hover:text-white">Home</Link></li>
-              <li><Link to="/profile" className="hover:text-white">My Account</Link></li>
-              <li><Link to="/wishlist" className="hover:text-white">Wishlist</Link></li>
-              <li><Link to="/cart" className="hover:text-white">Cart</Link></li>
+              <li><Link href="/" className="hover:text-white">Home</Link></li>
+              <li><Link href="/profile" className="hover:text-white">My Account</Link></li>
+              <li><Link href="/wishlist" className="hover:text-white">Wishlist</Link></li>
+              <li><Link href="/cart" className="hover:text-white">Cart</Link></li>
             </ul>
           </div>
 

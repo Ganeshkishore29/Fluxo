@@ -1,6 +1,6 @@
 import { useState, useRef, useLayoutEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const API_URL = "http://localhost:8000/api/chat/";
 
@@ -10,7 +10,7 @@ const ChatBox = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   //  Ref to scroll target
   const scrollTargetRef = useRef(null);
@@ -93,7 +93,7 @@ const ChatBox = ({ onClose }) => {
                   <div
                     key={p.id}
                     onClick={() => {
-                      navigate(`/product/${p.id}`);
+                      router.push(`/product/${p.id}`);
                       onClose();
                     }}
                     className="border rounded p-2 text-sm cursor-pointer hover:shadow-md transition"

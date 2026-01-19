@@ -1,0 +1,8 @@
+__turbopack_load_page_chunks__("/CartPage", [
+  "static/chunks/5b47dfe136bc37fc.js",
+  "static/chunks/a7a2b5536d3646bf.js",
+  "static/chunks/2ec4e0b100b95856.js",
+  "static/chunks/b1aa9f1446b3e196.js",
+  "static/chunks/a8fe6eb2f42edebc.js",
+  "static/chunks/turbopack-cf27e1ffe8b17e04.js"
+])

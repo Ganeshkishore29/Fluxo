@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Login from '../components/Login';
 import Signup from '../components/Signup';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const API_URL = "http://localhost:8000/api";
 
@@ -12,7 +12,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [emailExists, setEmailExists] = useState(null);
   const [showLogin, setShowLogin] = useState(true);
-const navigate = useNavigate();
+const router = useRouter();
 const handleEmailSubmit = async (e) => {
   e.preventDefault();
 
@@ -42,7 +42,7 @@ const handleEmailSubmit = async (e) => {
 
         {/* Close Button */}
       <button
-  onClick={() => navigate("/")}
+  onClick={() => router.push("/")}
   className="absolute top-3 right-3 text-black font-bold text-xl"
   aria-label="Close"
 >

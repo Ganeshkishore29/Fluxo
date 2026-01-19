@@ -1,15 +1,20 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
-import { getToken } from "../utils/PrivateRoute";
+import { useLocation } from "next/navigation";
+import { getToken } from "../utils/auth";
 
 const API_URL = "http://localhost:8000/api";
 
 const Recommendations = () => {
   const location = useLocation();
   const categoryId = location.state?.categoryId;
-  const token = getToken();
+  const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
 
   const [recommendations, setRecommendations] = useState([]);
   const [sortedRecs, setSortedRecs] = useState([]);

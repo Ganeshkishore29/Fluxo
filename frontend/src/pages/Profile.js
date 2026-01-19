@@ -1,14 +1,21 @@
+"use client";
 import { useEffect, useState } from "react";
-import { useNavigate,Link } from "react-router-dom";
+import  Link from "next/link";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { getToken } from "../utils/PrivateRoute";
+import ProtectedPage from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
 
 const API_URL = "http://localhost:8000/api";
 const GEO_API = process.env.REACT_APP_GEO_API;
 
 const Profile = () => {
-  const navigate = useNavigate();
-  const token = getToken();
+  const router = useRouter();
+  const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
 
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -45,7 +52,7 @@ const [deleteType, setDeleteType] = useState(null);
 
     axios.get(`${API_URL}/profile/`, { headers })
       .then(res => setProfile(res.data))
-      .catch(() => navigate("/register"));
+      .catch(() => router.push("/register"));
 
     axios.get(`${API_URL}/orders/`, { headers })
       .then(res => setOrders(res.data))
@@ -59,7 +66,7 @@ const [deleteType, setDeleteType] = useState(null);
   /* ================= LOGOUT ================= */
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/register");
+    router.push("/register");
   };
 
   /* ================= SAVE ADDRESS ================= */
@@ -222,6 +229,7 @@ const handleUseLiveLocation = () => {
   if (!profile) return <p className="p-6">Loading profile…</p>;
 
   return (
+    <ProtectedPage>
     <div className="p-6 max-w-3xl md:mx-6 space-y-10">
 
       <h1 className="text-[60px] font-bold uppercase">Account</h1>
@@ -450,7 +458,7 @@ const handleUseLiveLocation = () => {
         </div>
       )}
 
-    </div>
+    </div></ProtectedPage>
   );
 };
 

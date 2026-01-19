@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Camera, Mic, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
+import { useRouter } from "next/navigation";
 
 const API_URL = "http://localhost:8000/api";
 
@@ -17,7 +18,7 @@ const SearchPage = ({ onClose }) => {
 
 
   const fileInputRef = useRef(null);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   /* Clear image results when typing */
   useEffect(() => {
@@ -168,11 +169,11 @@ const startVoiceSearch = () => {
     setSuggestions([]);
 
     if (item.type === "product") {
-      navigate(`/product/${item.id}`);
+      router.push(`/product/${item.id}`);
     } else if (item.type === "subcategory") {
-      navigate(`/product-list/${item.id}`);
+      router.push(`/product-list/${item.id}`);
     } else {
-      navigate(`/main-categories/${item.id}`);
+      router.push(`/main-categories/${item.id}`);
     }
 
     onClose?.();
@@ -237,7 +238,7 @@ const startVoiceSearch = () => {
                 key={p.id}
                 className="border rounded p-2 cursor-pointer"
                 onClick={() => {
-                  navigate(`/product/${p.id}`);
+                  router.push(`/product/${p.id}`);
                   onClose?.();
                 }}
               >

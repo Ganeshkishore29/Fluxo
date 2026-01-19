@@ -1,12 +1,18 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getToken } from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
 
 const API_URL = "http://localhost:8000/api";
 
 const PaymentSuccess = () => {
-  const token = getToken();
+  
   const [status, setStatus] = useState("verifying");
+const [token, setToken] = useState(null);
+
+useEffect(() => {
+  setToken(getToken());
+}, []);
 
   useEffect(() => {
     const orderId = localStorage.getItem("last_order_id");

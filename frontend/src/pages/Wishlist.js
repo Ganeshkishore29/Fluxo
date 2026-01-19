@@ -1,15 +1,19 @@
+"use client";
 import React, { useEffect, useState } from "react";
-import { getToken } from "../utils/PrivateRoute";
+import ProtectedPage from "../utils/PrivateRoute";
+import { getToken } from "../utils/auth";
 import ProductCard from "../components/ProductCard";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import  Link  from "next/link";
 
 const API_URL = "http://localhost:8000/api";
 
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
-  const token = getToken();
-   
+  const [token, setToken] = useState(null);
+     useEffect(() => {
+    setToken(getToken());
+  }, []);
   useEffect(() => {
     if (!token) return;
 
@@ -34,6 +38,7 @@ const Wishlist = () => {
 
 
   return (
+    <ProtectedPage>
     <div>
       {/* TITLE */}
       <h1
@@ -102,7 +107,7 @@ const Wishlist = () => {
 </button></Link>
         </div>
       )}
-    </div>
+    </div></ProtectedPage>
   );
 };
 

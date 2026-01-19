@@ -1,19 +1,25 @@
 // src/utils/PrivateRoute.jsx
-import { Navigate, useLocation } from "react-router-dom";
 
-export const getToken = () => {
-  return localStorage.getItem("access_token"); 
-};
+"use client";
 
-const PrivateRoute = ({ children }) => {
-  const token = getToken();
-  const location = useLocation();
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getToken } from "../utils/auth";
 
-  if (!token) {
-    return <Navigate to="/register" state={{ from: location }} replace />;
-  }
+export default function ProtectedPage({ children }) {
+  const router = useRouter();
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const t = getToken();
+    if (!t) {
+      router.push("/register");
+    } else {
+      setToken(t);
+    }
+  }, [router]);
+
+  if (!token) return null;
 
   return children;
-};
-
-export default PrivateRoute;
+}
