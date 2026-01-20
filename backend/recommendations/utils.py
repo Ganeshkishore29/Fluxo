@@ -16,22 +16,27 @@ WEIGHTS = {
     "recent_decay_days": 14,        # recency window to prioritize recent actions
     "popularity_fallback": 0.5,     # global popularity weight
 }
-
 def compute_user_scores(user, top_k=8, category_id=None):
-    # Aggregate activities in recent window
-    
     now = timezone.now()
     window = now - timedelta(days=WEIGHTS["recent_decay_days"])
-    acts = UserActivity.objects.filter(user=user, timestamp__gte=window)
+
+    acts = UserActivity.objects.filter(
+        user=user,
+        timestamp__gte=window
+    )
+
+    # ✅ Restrict activities to category
+    if category_id:
+        acts = acts.filter(
+            product__sub_category__main_category_id=category_id
+        )
 
     scores = defaultdict(float)
-    
 
     for a in acts:
         pid = a.product_id
         if a.action == UserActivity.VIEW:
-            dur = a.duration_seconds or 0.0
-            scores[pid] += dur * WEIGHTS["view_time_per_second"]
+            scores[pid] += (a.duration_seconds or 0) * WEIGHTS["view_time_per_second"]
         elif a.action == UserActivity.ADD_CART:
             scores[pid] += WEIGHTS["add_to_cart"]
         elif a.action == UserActivity.WISHLIST:
@@ -39,45 +44,40 @@ def compute_user_scores(user, top_k=8, category_id=None):
         elif a.action == UserActivity.PURCHASE:
             scores[pid] += WEIGHTS["purchase"]
 
-    # If no strong signals, fallback to last order/wishlist/cart items aggregated quickly
-    if not scores:
-        # last purchases (if any)
-        purchases = UserActivity.objects.filter(user=user, action=UserActivity.PURCHASE).order_by('-timestamp')[:5]
-        for p in purchases:
-            scores[p.product_id] += WEIGHTS["purchase"] * 0.5
-
-    # Normalize scores and pick top seeds
     ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    seed_product_ids = [pid for pid, sc in ranked[:5]]
+    seed_product_ids = [pid for pid, _ in ranked[:5]]
 
-    # Expand seeds using embedding similarity (hybrid)
     recommendations = []
     seen = set(seed_product_ids)
+
     for pid in seed_product_ids:
-        # try FAISS search for similar
         try:
             pe = ProductEmbedding.objects.get(product_id=pid)
             emb = pe.get_vector()
-            results = faiss_search(emb,6)  # product_id + score
+            results = faiss_search(emb, 10)
+
             for r in results:
                 rid = r["product_id"]
-                if rid not in seen:
-                    recommendations.append((rid, r["score"]))
-                    seen.add(rid)
+                if rid in seen:
+                    continue
+
+                # ✅ CATEGORY CHECK HERE
+                if category_id:
+                    if not Product.objects.filter(
+                        id=rid,
+                        sub_category__main_category_id=category_id
+                    ).exists():
+                        continue
+
+                recommendations.append((rid, r["score"]))
+                seen.add(rid)
+
+                if len(recommendations) >= top_k:
+                    break
         except ProductEmbedding.DoesNotExist:
             continue
 
-    # If recommendations less than needed, add globally popular products
-    if len(recommendations) < top_k:
-        # simple popularity metric: number of purchases in DB (or product.popularity field)
-        pop_qs = Product.objects.order_by('-popularity')[:top_k*2]  # if you have popularity field
-        for p in pop_qs:
-            if p.id not in seen:
-                recommendations.append((p.id, WEIGHTS["popularity_fallback"]))
-                seen.add(p.id)
-            if len(recommendations) >= top_k:
-                break
+    
+  
 
-    # Build final list of product ids with optional scores
-    final = [pid for pid, sc in recommendations][:top_k]
-    return final
+    return [pid for pid, _ in recommendations][:top_k]

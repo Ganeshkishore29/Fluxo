@@ -42,16 +42,29 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductLiteSerializer(serializers.ModelSerializer):
     thumbnail_url = serializers.SerializerMethodField()
+    main_category_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'thumbnail_url',"category_id",]
+        fields = [
+            'id',
+            'name',
+            'price',
+            'thumbnail_url',
+            'main_category_id',
+        ]
 
-    def get_thumbnail_url(self, obj): # method to get the URL of the first image as thumbnail
+    def get_thumbnail_url(self, obj):
         first_image = obj.images.first()
         if first_image and first_image.images:
             return first_image.images.url
         return None
+
+    def get_main_category_id(self, obj):
+        if obj.sub_category and obj.sub_category.main_category:
+            return obj.sub_category.main_category.id
+        return None
+
 class BannerImageSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField(source="product.id", read_only=True)
 

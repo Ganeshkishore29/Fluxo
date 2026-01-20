@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {  ArrowRight, LucideArrowBigRightDash } from "lucide-react";
+import {  ArrowRight } from "lucide-react";
 import NewInCat from "../components/NewInCat";
 import SubcatBanner from "../components/SubcatBanner";
 import ProductCard from "../components/ProductCard";
@@ -12,7 +12,8 @@ const API_URL = "http://localhost:8000/api";
 
 const CategoryPage = () => {
   const { id } = useParams();
-  const categoryId = id ?? 2;
+const categoryId = Number(id || 2);
+
 const[products,setProducts]=useState([])
   const [banners, setBanners] = useState([]);
   const [subCatBanner,SetsubCatBanner]=useState([])
@@ -27,7 +28,7 @@ const [loading, setLoading] = useState(true);
 
 const token = getToken()
 
-/* 1️⃣ Fetch recommendations (personalized) */
+/* 1 Fetch recommendations (personalized) */
 useEffect(() => {
   if (!token) return;
 
@@ -47,7 +48,7 @@ useEffect(() => {
 }, [token, id]);
 
 
-/* 2️⃣ Fetch subcategories by parent category */
+/* 2 Fetch subcategories by parent category */
 useEffect(() => {
   setLoading(true);
   setProd([]);
@@ -63,7 +64,7 @@ useEffect(() => {
     );
 }, [id]);
 
-/* 3️⃣ Fetch category products */
+/* 3 Fetch category products */
 useEffect(() => {
   if (subCat.length === 0) {
     setLoading(false);
@@ -84,15 +85,8 @@ useEffect(() => {
     });
 }, [subCat]);
 
-/* 4️⃣ Filter recommendations by category */
-const filteredRecommendations =
-  subCat.length === 0
-    ? []
-    : recommendations.filter((p) =>
-        subCat.some((sc) => sc.id === p.sub_category)
-      );
 
-const limitedRecommendations = filteredRecommendations.slice(0, 4);
+const limitedRecommendations = recommendations.slice(0, 4);
 
 
 
@@ -121,28 +115,46 @@ const limitedRecommendations = filteredRecommendations.slice(0, 4);
   return (
     <>
       {/* ================= FULL WIDTH HERO BANNER ================= */}
-      <div className=" relative w-screen h-[60vh] md:h-[75vh] overflow-hidden cursor-pointer">
-        <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden h-[60vh] md:h-[75vh]">
-          <img
-            src={`http://localhost:8000${banners[0].image}`}
-            alt={banners[0].title}
-            className="w-full h-full object-cover"
-          />
-          <span
-            onClick={() => navigate(`/product/${banners[0].product_id}`)}
-            className="
-                      absolute bottom-[calc(10vh+40px)]
-                      left-[calc(60vw+70px)]
-                      -translate-x-[30px] md:translate-x-0
-                      bg-white text-black border-white
-                      px-2 pl-4 leading-none font-semibold
-                      text-base md:text-sm
-                      relative">
-            <span className="absolute top-1/2 left-1 -translate-y-1/2 w-1.5 h-1.5 bg-black" />
-            Rs.{Math.round(banners[0].price)}
-          </span>
-        </div>
-      </div>
+{/* ================= FULL WIDTH HERO BANNER ================= */}
+<div className="relative w-screen h-[60vh] md:h-[75vh] overflow-hidden cursor-pointer">
+  <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden h-[60vh] md:h-[75vh]"
+    onClick={() => navigate(`/product/${banners[0].product_id}`)}>
+    <img
+      src={`http://localhost:8000${banners[0].image}`}
+      alt={banners[0].title}
+      className="w-full h-full object-cover"
+    />
+
+    <span
+      onClick={() => navigate(`/product/${banners[0].product_id}`)}
+      className="
+        absolute bottom-[calc(10vh+40px)]
+        left-[calc(60vw+70px)]
+        -translate-x-[30px] md:translate-x-0
+        bg-white text-black
+        px-2 pl-4
+        font-semibold
+        text-base md:text-sm
+      "
+    >
+      <span className="absolute top-1/2 left-1 -translate-y-1/2 w-1.5 h-1.5 bg-black" />
+      Rs.{Math.round(banners[0].price)}
+    </span>
+  </div>
+</div>
+
+{/* ================= NEW IN SECTION (OUTSIDE BANNER) ================= */}
+<div
+  className="flex items-center justify-between cursor-pointer px-4 mt-5"
+  onClick={() => navigate(`/NewIn/${categoryId}`)}
+>
+  <p className="text-lg font-hnm tracking-wide">
+    NEW IN
+  </p>
+  <ArrowRight size={30} />
+</div>
+
+
 
 <div className="
   mt-4
@@ -194,25 +206,36 @@ const limitedRecommendations = filteredRecommendations.slice(0, 4);
     ))}
   </div>
 
-
-{/* CATEGORY PRODUCTS */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-  {prod.slice(0, 4).map((product) => (
-    <ProductCard key={product.id} product={product} />
-  ))}
-</div>
-
 {/* RECOMMENDED FOR YOU */}
 {limitedRecommendations.length > 0 && (
   <div className="mt-10">
-    <h2 className="mb-4 text-lg font-semibold">
-      Recommended for You
-    </h2>
+    <div
+    className="flex items-center justify-between cursor-pointer mb-3"
+    onClick={() => {
+  if (!categoryId) return;
+  navigate(`/recommended/${categoryId}`);
+}}
+
+  >
+    <p className="text-lg font-hnm tracking-wide">
+      RECOMMENDED FOR YOU
+    </p>
+    <ArrowRight size={30} />
+  </div>
 
     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
       {limitedRecommendations.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
+  <ProductCard
+    key={product.id}
+    product={{
+      ...product,
+      images: product.thumbnail_url
+        ? [{ images: product.thumbnail_url }]
+        : [],
+    }}
+  />
+))}
+
     </div>
   </div>
 )}

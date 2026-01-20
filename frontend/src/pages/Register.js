@@ -42,7 +42,7 @@ const handleEmailSubmit = async (e) => {
 
         {/* Close Button */}
       <button
-  onClick={() => navigate("/")}
+  onClick={() => navigate(-1)}
   className="absolute top-3 right-3 text-black font-bold text-xl"
   aria-label="Close"
 >

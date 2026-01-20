@@ -487,18 +487,18 @@ class SimilarProductsAPIView(APIView):
                 "sub_category__main_category"
             ).get(id=product_id)
         except Product.DoesNotExist:
-            return Response(
-                {"detail": "Product not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Safety
-        sub_cat = product.sub_category
-        main_cat = getattr(sub_cat, "main_category", None)
-        if not main_cat:
             return Response([], status=status.HTTP_200_OK)
 
-        # Limit handling
+        # 🚨 HARD SAFETY CHECKS
+        if not product.sub_category:
+            return Response([], status=status.HTTP_200_OK)
+
+        if not product.sub_category.main_category:
+            return Response([], status=status.HTTP_200_OK)
+
+        main_cat = product.sub_category.main_category
+        sub_cat = product.sub_category
+
         try:
             limit = int(request.query_params.get("limit", self.DEFAULT_LIMIT))
             limit = min(limit, self.MAX_LIMIT)
@@ -509,25 +509,16 @@ class SimilarProductsAPIView(APIView):
             sub_category__main_category=main_cat
         ).exclude(id=product.id)
 
-        # Prefer different subcategories
         preferred_qs = base_qs.exclude(sub_category=sub_cat)
-
         final_qs = preferred_qs if preferred_qs.exists() else base_qs
 
-        # Reduce DB load first
-        candidate_products = list(final_qs[: self.MAX_LIMIT])
-
-        # Deterministic shuffle (stable UX)
-        random.Random(product.id).shuffle(candidate_products)
-
-        result = candidate_products[:limit]
+        result = list(final_qs[:limit])
 
         serializer = ProductLiteSerializer(
             result,
             many=True,
             context={"request": request}
         )
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

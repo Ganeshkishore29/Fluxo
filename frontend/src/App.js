@@ -17,6 +17,7 @@ import Checkout from "./pages/Checkout";
 import SearchPage from "./pages/Search";
 import ChatWidget from "./components/ChatWidget";
 import PaymentSuccess from "./components/PaymentSuccess";
+import Recommendations from "./pages/Recommendations";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           <Route path='/checkout' element={<Checkout/>}/>
         <Route path="/search" element={<SearchPage/>}/>
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/recommended/:categoryId" element={<Recommendations />} />
 
         
         </Routes>

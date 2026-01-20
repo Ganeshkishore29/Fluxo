@@ -22,26 +22,28 @@ const ProductView = () => {
 
   const authMessage = authMessageCart || authMessageWishlist
   const token = getToken();
-  useEffect(() => {
-    axios
-      .get(`${API_URL}/products/${id}/`)
-      .then((res) => setProduct(res.data))
-      .catch((err) => console.error("Product fetch error", err));
+useEffect(() => {
+  if (!id) return;   
 
-     axios
-  .get(`${API_URL}/similar-product/${id}/`)
-  .then((res) => {
-    console.log("SIMILAR PRODUCT API RESPONSE ", res.data);
-    setSimilarProducts(
-      Array.isArray(res.data) ? res.data : [res.data]
-    );
-  })
-  .catch((err) => {
-    console.error("API ERROR", err);
-    setSimilarProducts([]);
-  });
+  axios
+    .get(`${API_URL}/products/${id}/`)
+    .then((res) => setProduct(res.data))
+    .catch((err) => console.error("Product fetch error", err));
 
-  }, [id]);
+  axios
+    .get(`${API_URL}/similar-product/${id}/`)
+    .then((res) => {
+      setSimilarProducts(
+        Array.isArray(res.data) ? res.data : [res.data]
+      );
+    })
+    .catch((err) => {
+      console.error("API ERROR", err);
+      setSimilarProducts([]);
+    });
+}, [id]);
+
+
 
 useEffect(() => {
   if (!token || !id) return;
@@ -94,7 +96,7 @@ const handleWishlistToggle = async () => {
     setAuthMessageWishlist(
       <>
         Please{" "}
-        <Link to="/register" className="text-black font-bold underline">
+        <Link to="/register" className="text-red font-bold underline">
           login
         </Link>{" "}
         to use wishlist
@@ -114,7 +116,7 @@ const handleWishlistToggle = async () => {
         }
       );
 
-      // ✅ LOG ACTIVITY AFTER SUCCESS
+      //  LOG ACTIVITY AFTER SUCCESS
       await axios.post(
         `${API_URL}/activity/create/`,
         {
@@ -146,7 +148,7 @@ const handleAddToCart = async () => {
     setauthMessageCart(
       <>
         Please{" "}
-        <Link to="/register" className="text-black font-bold underline">
+        <Link to="/register" className="text-red font-bold underline">
           login
         </Link>{" "}
         to use cart
@@ -173,7 +175,7 @@ const handleAddToCart = async () => {
       }
     );
 
-    // ✅ LOG ACTIVITY AFTER SUCCESS
+    // LOG ACTIVITY AFTER SUCCESS
     await axios.post(
       `${API_URL}/activity/create/`,
       {
@@ -220,7 +222,7 @@ const handleAddToCart = async () => {
     md:grid md:grid-cols-2
     md:gap-0          
     md:p-0          
-    scrollbar-premium
+  
 
     /* MOBILE */
     flex md:block

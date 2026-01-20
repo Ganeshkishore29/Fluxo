@@ -19,17 +19,11 @@ class RecommendationAPIView(APIView):
             category_id=category_id
         )
 
-        qs = Product.objects.filter(id__in=product_ids)
+        products = Product.objects.filter(id__in=product_ids)
 
-        # ✅ FIX: filter through sub_category → main_category
-        if category_id:
-            qs = qs.filter(
-                sub_category__main_category_id=category_id
-            )
-
-        # preserve order
-        id_to_prod = {p.id: p for p in qs}
-        ordered = [id_to_prod[pid] for pid in product_ids if pid in id_to_prod]
+        # Preserve order
+        id_map = {p.id: p for p in products}
+        ordered = [id_map[pid] for pid in product_ids if pid in id_map]
 
         serializer = ProductLiteSerializer(
             ordered,

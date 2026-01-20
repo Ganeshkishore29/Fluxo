@@ -4,19 +4,22 @@ import { useNavigate } from "react-router-dom";
 const SimilarProduct = ({ product }) => {
   const navigate = useNavigate();
 
-  const Image = product.thumbnail_url;
+  const image =
+    product.thumbnail ||
+    product.thumbnail_url ||
+    product.images?.[0]?.images;
 
-  if (!Image) return null;
+  if (!image) return null;
 
   return (
     <div
-      className="w-full h-[35vh] md:h-[40vh] overflow-hidden cursor-pointer"
+      className="h-[35vh] cursor-pointer overflow-hidden"
       onClick={() => navigate(`/product/${product.id}`)}
     >
       <img
-        src={`http://localhost:8000${Image}`}
+        src={`http://localhost:8000${image}`}
         alt={product.name}
-        className="w-full h-full object-cover transition-all duration-300"
+        className="w-full h-full object-cover hover:scale-105 transition"
       />
     </div>
   );
