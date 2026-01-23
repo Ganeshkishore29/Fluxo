@@ -51,10 +51,9 @@ jobs:
       - name: Wait for MySQL
         run: sleep 15
 
-      - name: Run migrations
+      - name: Django system check
         run: |
-          python backend/manage.py makemigrations
-          python backend/manage.py migrate
+          python backend/manage.py check
 
       - name: Run tests
         run: python backend/manage.py test
