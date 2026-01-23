@@ -37,7 +37,10 @@ const Navbar = () => {
   }));
 
 const token = getToken();
-const isLoggedIn = Boolean(token);
+const isLoggedIn = Boolean(token);  
+const limitedRecommendations = recommendations.slice(4, 6);
+
+
 const displayedProducts = isLoggedIn
   ? limitedRecommendations
   : fallbackNewIn;
@@ -139,8 +142,6 @@ useEffect(() => {
         setLoading(false);
       });
   }, [subCat]);
-
-  const limitedRecommendations = recommendations.slice(4, 6);
 
 
 
