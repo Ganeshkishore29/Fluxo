@@ -45,6 +45,7 @@ const displayedProducts = isLoggedIn
   ? limitedRecommendations
   : fallbackNewIn;
 
+console.log("API BASE:", import.meta.env.VITE_API_BASE_URL);
 
   /* Fetch main categories */
   useEffect(() => {
