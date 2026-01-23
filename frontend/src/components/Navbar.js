@@ -6,7 +6,7 @@ import { getToken } from "../utils/PrivateRoute";
 import SearchPage from "../pages/Search";
 import SmallProductCard from "./SmallProductCard";
 import { useNavigate } from "react-router-dom"; 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 
 const Navbar = () => {
@@ -45,7 +45,7 @@ const displayedProducts = isLoggedIn
   ? limitedRecommendations
   : fallbackNewIn;
 
-console.log("API BASE:", import.meta.env.VITE_API_BASE_URL);
+console.log("API BASE:", process.env.REACT_APP_API_BASE_URL);
 
   /* Fetch main categories */
   useEffect(() => {

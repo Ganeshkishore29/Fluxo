@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 const ProductList = () => {
   const { id } = useParams();
@@ -16,7 +16,7 @@ const ProductList = () => {
 
   // Fetch products (with optional sort)
   const fetchProducts = (sort = "") => {
-    let url = `${API_BASE_URL}/products/filter-sort/?sub_category_id=${id}`;
+    let url = `${API_URL}/products/filter-sort/?sub_category_id=${id}`;
     if (sort) url += `&sort=${sort}`;
 
     axios
