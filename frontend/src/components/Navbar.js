@@ -45,7 +45,10 @@ const displayedProducts = isLoggedIn
   ? limitedRecommendations
   : fallbackNewIn;
 
+
 console.log("API BASE:", process.env.REACT_APP_API_BASE_URL);
+console.log("ALL ENV:", process.env);
+
 
   /* Fetch main categories */
   useEffect(() => {
