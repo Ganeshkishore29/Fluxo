@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { getToken } from "../utils/PrivateRoute";
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
+
 
 const CartCard = ({ product, size, Qty }) => {
   const Image = product.images?.[0]?.images;

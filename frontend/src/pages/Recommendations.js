@@ -5,7 +5,7 @@ import axios from "axios";
 import { useParams} from "react-router-dom";
 import { getToken } from "../utils/PrivateRoute";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 const Recommendations = () => {
 

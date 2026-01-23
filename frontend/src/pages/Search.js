@@ -3,7 +3,8 @@ import axios from "axios";
 import { Camera, Mic, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
+
 
 const SearchPage = ({ onClose }) => {
   const [query, setQuery] = useState("");

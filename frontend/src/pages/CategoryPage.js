@@ -7,8 +7,8 @@ import SubcatBanner from "../components/SubcatBanner";
 import ProductCard from "../components/ProductCard";
 import { getToken } from "../utils/PrivateRoute";
 
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
-const API_URL = "http://localhost:8000/api";
 
 const CategoryPage = () => {
   const { id } = useParams();

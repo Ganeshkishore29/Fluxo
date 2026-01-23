@@ -3,7 +3,8 @@ import { useNavigate,Link } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
+
 const GEO_API = process.env.REACT_APP_GEO_API;
 
 const Profile = () => {

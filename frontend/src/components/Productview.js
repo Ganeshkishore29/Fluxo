@@ -6,7 +6,8 @@ import { getToken } from "../utils/PrivateRoute";
 import SimilarProduct from "./SimilarProduct";
 
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
+
 
 const ProductView = () => {
   const { id } = useParams();

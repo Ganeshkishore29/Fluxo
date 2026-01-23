@@ -3,7 +3,8 @@ import axios from "axios";
 import ProductCard from "../components/ProductCard";
 import { useParams } from "react-router-dom";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
+
 
 const NewInpage = () => {
   const { categoryId } = useParams();

@@ -3,7 +3,7 @@ import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
 import { Trash2 } from "lucide-react";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 const Checkout = () => {
   const token = getToken();
