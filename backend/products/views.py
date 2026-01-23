@@ -476,12 +476,21 @@ import random
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models.functions import Random
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from products.models import Product
+from products.serializers import ProductLiteSerializer
+
 
 class SimilarProductsAPIView(APIView):
     DEFAULT_LIMIT = 6
     MAX_LIMIT = 20
 
     def get(self, request, product_id):
+        # 1️⃣ Fetch product safely
         try:
             product = Product.objects.select_related(
                 "sub_category__main_category"
@@ -489,7 +498,7 @@ class SimilarProductsAPIView(APIView):
         except Product.DoesNotExist:
             return Response([], status=status.HTTP_200_OK)
 
-        # 🚨 HARD SAFETY CHECKS
+        # 2️⃣ Hard safety checks
         if not product.sub_category:
             return Response([], status=status.HTTP_200_OK)
 
@@ -499,26 +508,37 @@ class SimilarProductsAPIView(APIView):
         main_cat = product.sub_category.main_category
         sub_cat = product.sub_category
 
+        # 3️⃣ Limit handling (safe)
         try:
             limit = int(request.query_params.get("limit", self.DEFAULT_LIMIT))
             limit = min(limit, self.MAX_LIMIT)
-        except ValueError:
+        except (ValueError, TypeError):
             limit = self.DEFAULT_LIMIT
 
+        # 4️⃣ Base queryset (same main category)
         base_qs = Product.objects.filter(
             sub_category__main_category=main_cat
         ).exclude(id=product.id)
 
+        # 5️⃣ Prefer different sub-category
         preferred_qs = base_qs.exclude(sub_category=sub_cat)
+
+        # 6️⃣ Fallback if preferred empty
         final_qs = preferred_qs if preferred_qs.exists() else base_qs
 
+        #  7️⃣ CRITICAL FIX — dynamic ordering
+        final_qs = final_qs.order_by(Random())
+
+        # 8️⃣ Apply limit
         result = list(final_qs[:limit])
 
+        # 9️⃣ Serialize response
         serializer = ProductLiteSerializer(
             result,
             many=True,
             context={"request": request}
         )
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

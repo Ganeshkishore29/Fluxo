@@ -59,20 +59,7 @@ const Wishlist = () => {
         onRemoveFromWishlist={handleRemoveFromWishlist}
       />
 
-         <button
-  className="
-    mt-3 mb-5
-    border border-black
-    py-2
-    text-sm
-    text-center
-    w-[70%]
-    mx-auto
-    hover:bg-black hover:text-white
-  "
->
-  ADD
-</button>
+      
     </div>
   ))}
 </div>
