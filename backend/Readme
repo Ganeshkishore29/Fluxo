@@ -13,7 +13,7 @@ System Architecture Diagram
           /          |           \
          ▼           ▼            ▼
  Image Search   Autocomplete   AI Agent
-(CLIP+FAISS)      (Redis)        (LLM)
+(CLIP+FAISS)                     (LLM)
          \          |           /
           \         |          /
            ▼        ▼         ▼

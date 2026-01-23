@@ -1,11 +1,11 @@
-
+# backend/recommendations/utils.py
 import numpy as np
 from collections import defaultdict
 from datetime import timedelta, datetime
 from django.utils import timezone
 from activities.models import UserActivity
 from products.models import Product, ProductEmbedding
-from products.utils.faiss_index import search as faiss_search  # optional fast search
+from .services import get_ml_recommendations
 
 # Weight settings (tune these)
 WEIGHTS = {
@@ -54,7 +54,7 @@ def compute_user_scores(user, top_k=8, category_id=None):
         try:
             pe = ProductEmbedding.objects.get(product_id=pid)
             emb = pe.get_vector()
-            results = faiss_search(emb, 10)
+            results = get_ml_recommendations(emb, 10)
 
             for r in results:
                 rid = r["product_id"]

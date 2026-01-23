@@ -1,2 +1,25 @@
-﻿# Fluxo
+﻿System Architecture Diagram
 
+                USER
+    ┌────────────────────────────┐
+    │  Image | Voice | Text Input│
+    └────────────────────────────┘
+                   │
+                   ▼
+          ┌──────────────────┐
+          │  API Gateway      │
+          └──────────────────┘
+           /         |          \
+          /          |           \
+         ▼           ▼            ▼
+ Image Search   Autocomplete   AI Agent
+(CLIP+FAISS)                     (LLM)
+         \          |           /
+          \         |          /
+           ▼        ▼         ▼
+       Recommendation Engine
+  (view time + wishlist + cart +
+       purchases + embeddings)
+                   │
+                   ▼
+         Personalized Results

@@ -16,7 +16,7 @@ try:
     import numpy as np      # numerical operations  # type: ignore
 except Exception as e:
     raise ImportError("NumPy is required for this module; install it with 'pip install numpy'.") from e
-from products.models import ProductEmbedding
+from backend.products.models import ProductEmbedding
 
 
 # Global variables to store index in memory

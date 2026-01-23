@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
+from re import M
 
 from dotenv import load_dotenv
 import os
@@ -31,6 +32,8 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 CASHFREE_CLIENT_ID = os.getenv("CASHFREE_CLIENT_ID")
 CASHFREE_CLIENT_SECRET = os.getenv("CASHFREE_CLIENT_SECRET")
 CASHFREE_API_URL = os.getenv("CASHFREE_API_URL")
+ML_SERVICE_URL = os.getenv("ML_SERVICE_URL")
+ML_IMAGE_SEARCH_URL = os.getenv("ML_IMAGE_SEARCH_URL")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -130,11 +133,11 @@ REST_FRAMEWORK = {
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "NAME": os.getenv("MYSQLDATABASE"),
+        "USER": os.getenv("MYSQLUSER"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD"),
+        "HOST": os.getenv("MYSQLHOST", "127.0.0.1"),
+        "PORT": os.getenv("MYSQLPORT", "3306"),
     }
 }
 
