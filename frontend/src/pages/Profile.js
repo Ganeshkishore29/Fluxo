@@ -4,9 +4,7 @@ import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
 
 const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
-
-const GEO_API = process.env.REACT_APP_GEO_API;
-
+const GEO_API = import.meta.env.VITE_GEO_API;
 const Profile = () => {
   const navigate = useNavigate();
   const token = getToken();
