@@ -11,10 +11,10 @@ to store all embeddings at once.
 
 """
 from django.core.management.base import BaseCommand  #base class for management commands
-from products.utils.image_features import image_to_embedding  #function to convert images to CLIP vector
+from image_features import image_to_embedding  #function to convert images to CLIP vector
 from PIL import Image  #open image files
 import io  #handles image byte streams (not strictly needed here but safe to import).
-from products.models import Product, ProductEmbedding, ProductImages
+from backend.products.models import Product, ProductEmbedding, ProductImages
 
 class Command(BaseCommand):
     help='Compute and store image embeddings for all products'

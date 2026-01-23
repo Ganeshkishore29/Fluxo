@@ -6,12 +6,11 @@ from .models import Product, MainCategory, SubCategory, ProductImages,ProductSiz
 from .serializers import ProductSerializer, MainCategorySerializer, SubCategorySerializer,ProductLiteSerializer,ProductSizeSerializer,ProductImagesSerializer,BannerImageSerializer
 from rest_framework import permissions
 from django.db.models import Q
-from PIL import Image
-import io
-import numpy as np
-from .utils.image_features import image_to_embedding
-from .utils.faiss_index import search as faiss_search
 
+import io
+
+
+from .services import image_search_via_ml
 from django.db.models import F
 from numpy.linalg import norm
 
@@ -149,106 +148,33 @@ class NewInProductsView(APIView):
         return Response(serializer.data)
 
 
+
+
+
 class ImageSearchAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        SIMILARITY_THRESHOLD = 0.75
-        TOPK_FAISS = 30
-        FINAL_RESULTS = 8
-
-        # ---------------------------------
-        #  Read image
-        # ---------------------------------
-        f = request.FILES.get("image")
-        if not f:
+        image = request.FILES.get("image")
+        if not image:
             return Response(
-                {"detail": "No image provided."},
+                {"detail": "No image provided"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        try:
-            pil_image = Image.open(f).convert("RGB")
-        except Exception as e:
-            return Response(
-                {"detail": f"Invalid image: {e}"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        ml_response = image_search_via_ml(image)
+        results = ml_response.get("results", [])
 
-        # ---------------------------------
-        #  Compute embedding
-        # ---------------------------------
-        emb = image_to_embedding(pil_image)  # normalized float32
-
-        # ---------------------------------
-        #  FAISS search (over-fetch)
-        # ---------------------------------
-        try:
-            faiss_results = faiss_search(emb, topk=TOPK_FAISS)
-        except Exception:
-            faiss_results = []
-
-        # ---------------------------------
-        #  Apply similarity threshold
-        # ---------------------------------
-        filtered = [
-            r for r in faiss_results
-            if r["score"] >= SIMILARITY_THRESHOLD
-        ]
-
-        product_ids = [r["product_id"] for r in filtered]
-        scores = {r["product_id"]: r["score"] for r in filtered}
-
-        # ---------------------------------
-        #  Fallback (DB cosine)
-        # ---------------------------------
-        if not product_ids:
-            best = []
-            for pe in ProductEmbedding.objects.exclude(vector__isnull=True):
-                s = float(np.dot(emb, pe.get_vector()))
-                if s >= SIMILARITY_THRESHOLD:
-                    best.append((pe.product_id, s))
-
-            best.sort(key=lambda x: x[1], reverse=True)
-            best = best[:FINAL_RESULTS]
-
-            product_ids = [pid for pid, _ in best]
-            scores = dict(best)
-
-        if not product_ids:
+        if not results:
             return Response({"results": []})
 
-        # ---------------------------------
-        #  Fetch products
-        # ---------------------------------
-        products = Product.objects.filter(id__in=product_ids)\
-            .select_related("sub_category", "sub_category__main_category")
+        product_ids = [r["product_id"] for r in results]
+        scores = {r["product_id"]: r["score"] for r in results}
 
-        id_to_product = {p.id: p for p in products}
-        ordered = [id_to_product[pid] for pid in product_ids if pid in id_to_product]
+        products = Product.objects.filter(id__in=product_ids)
+        id_map = {p.id: p for p in products}
+        ordered = [id_map[pid] for pid in product_ids if pid in id_map]
 
-        # ---------------------------------
-        #  Re-rank using dominant subcategory
-        # ---------------------------------
-        from collections import Counter
-
-        subcat_counts = Counter(
-            p.sub_category_id for p in ordered
-        )
-
-        dominant_subcat = subcat_counts.most_common(1)[0][0]
-
-        ordered.sort(
-            key=lambda p: scores.get(p.id, 0) +
-            (0.05 if p.sub_category_id == dominant_subcat else 0),
-            reverse=True
-        )
-
-        ordered = ordered[:FINAL_RESULTS]
-
-        # ---------------------------------
-        #  Serialize
-        # ---------------------------------
         serializer = ProductLiteSerializer(
             ordered, many=True, context={"request": request}
         )
@@ -476,12 +402,21 @@ import random
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models.functions import Random
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from products.models import Product
+from products.serializers import ProductLiteSerializer
+
 
 class SimilarProductsAPIView(APIView):
     DEFAULT_LIMIT = 6
     MAX_LIMIT = 20
 
     def get(self, request, product_id):
+        # 1️⃣ Fetch product safely
         try:
             product = Product.objects.select_related(
                 "sub_category__main_category"
@@ -489,7 +424,7 @@ class SimilarProductsAPIView(APIView):
         except Product.DoesNotExist:
             return Response([], status=status.HTTP_200_OK)
 
-        # 🚨 HARD SAFETY CHECKS
+        # 2️⃣ Hard safety checks
         if not product.sub_category:
             return Response([], status=status.HTTP_200_OK)
 
@@ -499,26 +434,37 @@ class SimilarProductsAPIView(APIView):
         main_cat = product.sub_category.main_category
         sub_cat = product.sub_category
 
+        # 3️⃣ Limit handling (safe)
         try:
             limit = int(request.query_params.get("limit", self.DEFAULT_LIMIT))
             limit = min(limit, self.MAX_LIMIT)
-        except ValueError:
+        except (ValueError, TypeError):
             limit = self.DEFAULT_LIMIT
 
+        # 4️⃣ Base queryset (same main category)
         base_qs = Product.objects.filter(
             sub_category__main_category=main_cat
         ).exclude(id=product.id)
 
+        # 5️⃣ Prefer different sub-category
         preferred_qs = base_qs.exclude(sub_category=sub_cat)
+
+        # 6️⃣ Fallback if preferred empty
         final_qs = preferred_qs if preferred_qs.exists() else base_qs
 
+        #  7️⃣ CRITICAL FIX — dynamic ordering
+        final_qs = final_qs.order_by(Random())
+
+        # 8️⃣ Apply limit
         result = list(final_qs[:limit])
 
+        # 9️⃣ Serialize response
         serializer = ProductLiteSerializer(
             result,
             many=True,
             context={"request": request}
         )
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

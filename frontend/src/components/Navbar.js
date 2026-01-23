@@ -37,8 +37,8 @@ const Navbar = () => {
   }));
 
 const token = getToken();
-const isLoggedIn = Boolean(token);  
-const limitedRecommendations = recommendations.slice(4, 6);
+const isLoggedIn = Boolean(token);
+  const limitedRecommendations = recommendations.slice(4, 6);
 
 
 const displayedProducts = isLoggedIn
