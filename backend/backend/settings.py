@@ -43,9 +43,13 @@ IS_CI = os.getenv("CI") == "true"
 SECRET_KEY = 'django-insecure-q%&g*u!g7tl(k2j=907*bw*eg^fv!pe2usd)n8+khe7#az^_x&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = ["backend-production-4361.up.railway.app"]
+
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1"
+).split(",")
 
 
 AUTH_USER_MODEL='users.CustomUser'
@@ -86,7 +90,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
      
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://fluxo-lilac.vercel.app"
+]
 
 from corsheaders.defaults import default_headers
 
