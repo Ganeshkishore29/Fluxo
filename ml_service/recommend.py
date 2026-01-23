@@ -1,6 +1,9 @@
 # ml_service/recommend.py
 import numpy as np
 from ml_service.faiss_index import search
+from PIL import Image
+from image_features import image_to_embedding
+from faiss_index import search
 
 def recommend_products(seed_product_ids, top_k=6):
     """
@@ -15,3 +18,16 @@ def recommend_products(seed_product_ids, top_k=6):
     results = search(seed_id, top_k=top_k)
 
     return [r["product_id"] for r in results]
+
+
+
+def recommend_from_image(upload_file):
+    img = Image.open(upload_file.file).convert("RGB")
+    emb = image_to_embedding(img)
+
+    faiss_results = search(emb, top_k=30)
+
+    return [
+        {"product_id": r["product_id"], "score": r["score"]}
+        for r in faiss_results[:8]
+    ]
