@@ -140,19 +140,28 @@ REST_FRAMEWORK = {
 
 import os
 
+IS_RAILWAY = os.getenv("RAILWAY_ENV") == "true"
+
+if IS_RAILWAY:
+    DB_HOST = "mysql.railway.internal"
+    DB_PORT = "3306"
+else:
+    DB_HOST = os.getenv("MYSQLHOST")      
+    DB_PORT = os.getenv("MYSQLPORT")      
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQLDATABASE"),
-        "USER": os.environ.get("MYSQLUSER"),
-        "PASSWORD": os.environ.get("MYSQLPASSWORD"),
-        "HOST": os.environ.get("MYSQLHOST"),
-        "PORT": os.environ.get("MYSQLPORT", "3306"),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
+        "NAME": os.getenv("MYSQLDATABASE"),
+        "USER": os.getenv("MYSQLUSER"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD"),
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
+        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
+
+print("DB HOST =", DB_HOST)
 
 print("MYSQLHOST =", os.environ.get("MYSQLHOST"))
 
