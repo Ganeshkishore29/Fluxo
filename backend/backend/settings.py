@@ -157,7 +157,6 @@ DATABASES = {
 print("MYSQLHOST =", os.environ.get("MYSQLHOST"))
 
 
-print("MYSQLHOST =", os.getenv("MYSQLHOST"))
 
 
 

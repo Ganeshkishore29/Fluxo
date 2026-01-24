@@ -27,6 +27,9 @@ build/
 dist/
 *.env
 .env
+.env.local
+.env.development.local
+.env.production
 
 # System files
 .DS_Store
