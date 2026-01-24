@@ -34,7 +34,7 @@ CASHFREE_CLIENT_SECRET = os.getenv("CASHFREE_CLIENT_SECRET")
 CASHFREE_API_URL = os.getenv("CASHFREE_API_URL")
 ML_SERVICE_URL = os.getenv("ML_SERVICE_URL")
 ML_IMAGE_SEARCH_URL = os.getenv("ML_IMAGE_SEARCH_URL")
-IS_CI = os.getenv("CI") == "true"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -138,27 +138,25 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
-if IS_CI:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+import os
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.environ.get("MYSQLDATABASE"),
+        "USER": os.environ.get("MYSQLUSER"),
+        "PASSWORD": os.environ.get("MYSQLPASSWORD"),
+        "HOST": os.environ.get("MYSQLHOST"),
+        "PORT": os.environ.get("MYSQLPORT", "3306"),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("MYSQLDATABASE"),
-            "USER": os.getenv("MYSQLUSER"),
-            "PASSWORD": os.getenv("MYSQL_ROOT_PASSWORD"),
-            "HOST": os.getenv("MYSQLHOST"),
-            "PORT": os.getenv("MYSQLPORT", "3306"),
-            "OPTIONS": {
-                "charset": "utf8mb4",
-            },
-        }
-    }
+}
+
+print("MYSQLHOST =", os.environ.get("MYSQLHOST"))
+
+
 print("MYSQLHOST =", os.getenv("MYSQLHOST"))
 
 
