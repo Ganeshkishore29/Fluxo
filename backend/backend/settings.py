@@ -153,6 +153,7 @@ DATABASES = {
         },
     }
 }
+print("MYSQLDATABASE =", os.getenv("MYSQLDATABASE"))
 print("MYSQLHOST =", os.getenv("MYSQLHOST"))
 print("MYSQLPORT =", os.getenv("MYSQLPORT"))
 print("MYSQLUSER =", os.getenv("MYSQLUSER"))
