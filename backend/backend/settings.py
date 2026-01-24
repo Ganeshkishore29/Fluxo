@@ -159,6 +159,7 @@ else:
             },
         }
     }
+print("MYSQLHOST =", os.getenv("MYSQLHOST"))
 
 
 
