@@ -146,15 +146,16 @@ if DEBUG:
     }
 else:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("MYSQLDATABASE"),
-            "USER": os.getenv("MYSQLUSER"),
-            "PASSWORD": os.getenv("MYSQL_ROOT_PASSWORD"),
-            "HOST": os.getenv("MYSQLHOST"),
-            "PORT": os.getenv("MYSQLPORT"),
-        }
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQLDATABASE"),
+        "USER": os.getenv("MYSQLUSER"),
+        "PASSWORD": os.getenv("MYSQL_ROOT_PASSWORD"),
+        "HOST": os.getenv("MYSQLHOST"),
+        "PORT": os.getenv("MYSQLPORT"),
     }
+}
+
 
 print("MYSQLDATABASE =", os.getenv("MYSQLDATABASE"))
 print("MYSQLHOST =", os.getenv("MYSQLHOST"))
