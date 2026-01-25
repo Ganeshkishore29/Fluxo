@@ -136,7 +136,9 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if DEBUG:
+USE_SQLITE = os.getenv("USE_SQLITE") == "True"
+
+if USE_SQLITE:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -145,15 +147,15 @@ if DEBUG:
     }
 else:
     DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE"),
-        "USER": os.getenv("MYSQLUSER"),
-        "PASSWORD": os.getenv("MYSQL_ROOT_PASSWORD"),
-        "HOST": os.getenv("MYSQLHOST"),
-        "PORT": os.getenv("MYSQLPORT"),
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("MYSQLDATABASE"),
+            "USER": os.getenv("MYSQLUSER"),
+            "PASSWORD": os.getenv("MYSQL_ROOT_PASSWORD"),
+            "HOST": os.getenv("MYSQLHOST"),
+            "PORT": os.getenv("MYSQLPORT"),
+        }
     }
-}
 
 
 print("MYSQLDATABASE =", os.getenv("MYSQLDATABASE"))
