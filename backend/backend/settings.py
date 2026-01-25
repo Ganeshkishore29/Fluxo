@@ -78,21 +78,27 @@ INSTALLED_APPS = [
 MEDIA_URL= '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://fluxo-lilac.vercel.app",
+    "https://fluxo-production-c578.up.railway.app",
+]
+
 CORS_ALLOWED_ORIGINS = [
-    "https://fluxo-lilac.vercel.app"
+    "https://fluxo-lilac.vercel.app",
 ]
 
 from corsheaders.defaults import default_headers
