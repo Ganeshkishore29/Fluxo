@@ -35,7 +35,6 @@ CASHFREE_API_URL = os.getenv("CASHFREE_API_URL")
 ML_SERVICE_URL = os.getenv("ML_SERVICE_URL")
 ML_IMAGE_SEARCH_URL = os.getenv("ML_IMAGE_SEARCH_URL")
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
