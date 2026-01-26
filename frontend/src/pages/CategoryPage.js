@@ -121,7 +121,7 @@ const limitedRecommendations = recommendations.slice(0, 4);
   <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden h-[60vh] md:h-[75vh]"
     onClick={() => navigate(`/product/${banners[0].product_id}`)}>
     <img
-      src={banners[0].image}
+      src={`http://localhost:8000${banners[0].image}`}
       alt={banners[0].title}
       className="w-full h-full object-cover"
     />

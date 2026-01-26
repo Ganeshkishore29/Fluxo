@@ -14,7 +14,7 @@ const SmallProductCard = ({ product }) => {
       onClick={() => navigate(`/product/${product.id}`)}
     >
       <img
-        src={Image}
+        src={`http://localhost:8000${Image}`}
         alt={product.name}
         className="w-full h-full object-cover transition-all duration-300"
       />
