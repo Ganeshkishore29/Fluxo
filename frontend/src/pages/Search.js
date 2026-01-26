@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Camera, Mic, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../utils/config";
+
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 
@@ -243,7 +243,7 @@ const startVoiceSearch = () => {
                 }}
               >
                 <img
-                  src={`${BASE_URL}${p.thumbnail_url}`}
+                  src={p.thumbnail_url}
                   alt=""
                   className="w-full h-40 object-cover"
                 />

@@ -6,7 +6,6 @@ import NewInCat from "../components/NewInCat";
 import SubcatBanner from "../components/SubcatBanner";
 import ProductCard from "../components/ProductCard";
 import { getToken } from "../utils/PrivateRoute";
-import { BASE_URL } from "../utils/config";
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
