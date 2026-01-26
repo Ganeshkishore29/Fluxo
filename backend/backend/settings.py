@@ -18,7 +18,6 @@ from re import M
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
 
 
@@ -26,7 +25,9 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / ".env.local")
 load_dotenv(BASE_DIR / ".env")
+  
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 CASHFREE_CLIENT_ID = os.getenv("CASHFREE_CLIENT_ID")
@@ -45,10 +46,10 @@ SECRET_KEY = 'django-insecure-q%&g*u!g7tl(k2j=907*bw*eg^fv!pe2usd)n8+khe7#az^_x&
 DEBUG = os.getenv("DEBUG") == "True"
 
 
-ALLOWED_HOSTS = os.getenv(
-    "ALLOWED_HOSTS",
-    "localhost,127.0.0.1"
-).split(",")
+ALLOWED_HOSTS = [
+    
+    "fluxo-production-c578.up.railway.app",
+]
 
 
 AUTH_USER_MODEL='users.CustomUser'
@@ -93,13 +94,13 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOWED_ORIGINS = [
+    
+    "https://fluxo-lilac.vercel.app",
+]
 CSRF_TRUSTED_ORIGINS = [
     "https://fluxo-lilac.vercel.app",
     "https://fluxo-production-c578.up.railway.app",
-]
-
-CORS_ALLOWED_ORIGINS = [
-    "https://fluxo-lilac.vercel.app",
 ]
 
 from corsheaders.defaults import default_headers
@@ -171,8 +172,7 @@ print("MYSQLDATABASE =", os.getenv("MYSQLDATABASE"))
 print("MYSQLHOST =", os.getenv("MYSQLHOST"))
 print("MYSQLPORT =", os.getenv("MYSQLPORT"))
 print("MYSQLUSER =", os.getenv("MYSQLUSER"))
-print("MYSQL_ROOT_PASSWORD =", bool(os.getenv("MYSQL_ROOT_PASSWORD")))
-
+print("MYSQL_ROOT_PASSWORD =", os.getenv("MYSQL_ROOT_PASSWORD"))
 
 
 # Password validation
