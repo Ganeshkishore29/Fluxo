@@ -60,7 +60,7 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
 
   /* ---------------- REMOVE CART ITEM ---------------- */
   const removeFromCart = async (id) => {
-    await axios.delete(`${API_URL}/cart/remove/${id}/`, { headers });
+    await axios.delete(`${API_URL}/cart/${id}/`, { headers });
     setCartItems(prev => prev.filter(i => i.id !== id));
     fetchSummary();
   };
@@ -144,7 +144,7 @@ const handlePayment = async () => {
             {cartItems.map(item => (
               <div key={item.id} className="relative w-20 h-24 border rounded">
                 <img
-                  src={`http://localhost:8000${item.product.images[0].images}`}
+                  src={getImageUrl(item.product.images[0].images)}
                   className="w-full h-full object-cover"
                 />
                 <button

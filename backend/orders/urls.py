@@ -3,7 +3,7 @@ from .views import CartView, CashfreePaymentView, OrderListView, AddressView,Tot
 
 urlpatterns = [
     path('cart/', CartView.as_view(), name='cart'),
-    path('cart/remove/<int:pk>/',CartView.as_view(),name='cart-delete'),
+    path('cart/<int:pk>/',CartView.as_view(),name='cart-delete'),
     path('total-bill/', TotalBillView.as_view(), name='total-bill'),
     path('cashfree/', CashfreePaymentView.as_view(), name='payment'),
     path("cashfree/verify/", CashfreeVerifyView.as_view()),
