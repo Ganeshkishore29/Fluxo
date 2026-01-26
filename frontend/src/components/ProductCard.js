@@ -13,9 +13,13 @@ const ProductCard = ({ product, onRemoveFromWishlist }) => {
   const token = getToken();
   const navigate = useNavigate();
 
-  const firstImage = product.images?.[0]?.images;
-  const secondImage = product.images?.[1]?.images;
+ const firstImage = product.images?.[0]?.images
+  ? `${BASE_URL}${product.images[0].images}`
+  : null;
 
+const secondImage = product.images?.[1]?.images
+  ? `${BASE_URL}${product.images[1].images}`
+  : null;
   useEffect(() => {
     if (!token || !product?.id) return;
 
