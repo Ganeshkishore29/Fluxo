@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction
 from .models import Order, OrderItem, Address
+from products.models import Product, ProductSize
 from django.conf import settings
 from decimal import Decimal
 from .serializers import OrderSerializer, OrderItemSerializer, AddressSerializer
