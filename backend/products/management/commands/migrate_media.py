@@ -2,24 +2,22 @@ from django.core.management.base import BaseCommand
 from products.models import ProductImages
 
 class Command(BaseCommand):
-    help = "Migrate local product images to Cloudinary"
+    help = "Force migrate remaining local media files to Cloudinary"
 
     def handle(self, *args, **kwargs):
-        images_qs = ProductImages.objects.all()
+        qs = ProductImages.objects.exclude(images__startswith="http")
 
-        if not images_qs.exists():
-            self.stdout.write(self.style.WARNING("No images found to migrate"))
+        if not qs.exists():
+            self.stdout.write(self.style.SUCCESS("No local images left to migrate"))
             return
 
-        for img in images_qs:
-            if img.images:
-                self.stdout.write(f"Migrating: {img.images.name}")
-
-                # Re-save the image -> triggers upload to Cloudinary
+        for img in qs:
+            if img.images and img.images.name:
+                self.stdout.write(f"Force migrating: {img.images.name}")
                 img.images.save(
                     img.images.name,
                     img.images.file,
                     save=True
                 )
 
-        self.stdout.write(self.style.SUCCESS(" All product images migrated to Cloudinary"))
+        self.stdout.write(self.style.SUCCESS("✅ Remaining images migrated"))

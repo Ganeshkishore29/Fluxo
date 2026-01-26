@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 
-const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/chat/`;
 
 
 const ChatBox = ({ onClose }) => {
