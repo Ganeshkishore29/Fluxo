@@ -50,6 +50,7 @@ useEffect(() => {
 
 /* 2 Fetch subcategories by parent category */
 useEffect(() => {
+  
   setLoading(true);
   setProd([]);
   setSubCat([]);
