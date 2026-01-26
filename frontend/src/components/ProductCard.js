@@ -3,7 +3,7 @@ import { getToken } from "../utils/PrivateRoute";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Heart } from "lucide-react";
-import { BASE_URL } from "../utils/config";
+
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 
@@ -65,7 +65,7 @@ const ProductCard = ({ product, onRemoveFromWishlist }) => {
       <div className="w-full h-[45vh] md:h-[70vh] overflow-hidden">
         {firstImage && (
           <img
-            src={`${BASE_URL}${hovered && secondImage ? secondImage : firstImage}`} 
+            src={hovered && secondImage ? secondImage : firstImage}
             alt={product.name}
             className="w-full h-full object-cover transition-all duration-300"
           />

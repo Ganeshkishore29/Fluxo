@@ -3,7 +3,7 @@ import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../utils/PrivateRoute";
 import axios from "axios";
-import { BASE_URL } from "../utils/config";
+
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 const CartCard = ({ product, size, Qty }) => {
@@ -63,7 +63,7 @@ const CartCard = ({ product, size, Qty }) => {
       {/* IMAGE */}
       <div className="w-[35%] h-[140px] overflow-hidden">
         <img
-          src={`${BASE_URL}${Image}`}
+          src={Image}
           alt={product.name}
           className="w-full h-full object-cover"
         />

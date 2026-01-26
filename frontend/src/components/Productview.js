@@ -4,7 +4,7 @@ import axios from "axios";
 import { Heart, Plus } from "lucide-react";
 import { getToken } from "../utils/PrivateRoute";
 import SimilarProduct from "./SimilarProduct";
-import { BASE_URL } from "../utils/config";
+
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
@@ -241,7 +241,7 @@ const handleAddToCart = async () => {
               <img
                 key={img.id}
 
-                src={`${BASE_URL}${img.images}`}
+                src={img.images}
 
 
                 alt={product.name}

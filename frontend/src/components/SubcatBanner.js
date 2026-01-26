@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../utils/config"; 
 const SubcatBanner = ({ subcat, align }) => {
   const image = subcat.banner_image;
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ const SubcatBanner = ({ subcat, align }) => {
       {/* IMAGE */}
       <div className="relative w-full h-[45vh] md:h-[70vh] lg:h-[88vh] overflow-hidden">
         <img
-          src={`${BASE_URL}${image}`}
+          src={image}
           alt={subcat.name}
           className="w-full h-full object-cover"
         />

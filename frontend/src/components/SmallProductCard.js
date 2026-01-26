@@ -1,13 +1,11 @@
 import React from "react";
-import { useNavigate} from "react-router-dom";
-import { BASE_URL } from "../utils/config";
+import { useNavigate } from "react-router-dom";
 
 const SmallProductCard = ({ product }) => {
   const navigate = useNavigate();
+  const imageUrl = product.thumbnail_url;
 
-  const Image = product.thumbnail_url;
-
-  if (!Image) return null;
+  if (!imageUrl) return null;
 
   return (
     <div
@@ -15,7 +13,7 @@ const SmallProductCard = ({ product }) => {
       onClick={() => navigate(`/product/${product.id}`)}
     >
       <img
-        src={`${BASE_URL}${Image}`}
+        src={imageUrl}
         alt={product.name}
         className="w-full h-full object-cover transition-all duration-300"
       />

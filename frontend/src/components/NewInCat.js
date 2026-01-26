@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../utils/config";
+
 const NewInCat = ({ product }) => {
   const navigate = useNavigate();
   const SecondImage = product.images?.[1]?.images;
@@ -11,7 +11,7 @@ const NewInCat = ({ product }) => {
     >
       {SecondImage && (
         <img
-          src={`${BASE_URL}${SecondImage}`}
+          src={SecondImage}
           alt={product.name}
           className="w-full h-full object-cover transition-all duration-300"
         />
