@@ -17,5 +17,3 @@ const PrivateRoute = ({ children }) => {
 };
 
 export default PrivateRoute;
-// src/utils/config.js
-export const BASE_URL = process.env.REACT_APP_API_BASE_URL;
