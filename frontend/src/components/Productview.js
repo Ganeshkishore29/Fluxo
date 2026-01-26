@@ -240,7 +240,7 @@ const handleAddToCart = async () => {
             return (
               <img
                 key={img.id}
-                src={`http://localhost:8000${img.images}`}
+                src={`${process.env.REACT_APP_API_BASE_URL}${img.images}`}
                 alt={product.name}
                 className={`
           block                 
