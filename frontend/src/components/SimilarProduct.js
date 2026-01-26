@@ -17,7 +17,7 @@ const SimilarProduct = ({ product }) => {
       onClick={() => navigate(`/product/${product.id}`)}
     >
       <img
-        src={`http://localhost:8000${image}`}
+        src={`${BASE_URL}${image}`}
         alt={product.name}
         className="w-full h-full object-cover hover:scale-105 transition"
       />

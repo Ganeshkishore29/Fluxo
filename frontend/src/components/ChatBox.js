@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/config";
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
@@ -91,7 +92,7 @@ const [keyboardOpen, setKeyboardOpen] = useState(false);
                     className="border rounded p-2 text-sm cursor-pointer hover:shadow-md transition"
                   >
                     <img
-                      src={`http://localhost:8000${p.image}`}
+                      src={`${BASE_URL}${p.image}`}
                       alt={p.name}
                       className="h-20 w-full object-cover mb-1 rounded"
                     />

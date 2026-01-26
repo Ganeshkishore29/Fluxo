@@ -6,6 +6,7 @@ import NewInCat from "../components/NewInCat";
 import SubcatBanner from "../components/SubcatBanner";
 import ProductCard from "../components/ProductCard";
 import { getToken } from "../utils/PrivateRoute";
+import { BASE_URL } from "../utils/config";
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
@@ -121,7 +122,7 @@ const limitedRecommendations = recommendations.slice(0, 4);
   <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden h-[60vh] md:h-[75vh]"
     onClick={() => navigate(`/product/${banners[0].product_id}`)}>
     <img
-      src={`http://localhost:8000${banners[0].image}`}
+      src={`${BASE_URL}${banners[0].image}`}
       alt={banners[0].title}
       className="w-full h-full object-cover"
     />
