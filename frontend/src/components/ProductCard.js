@@ -65,9 +65,9 @@ const ProductCard = ({ product, onRemoveFromWishlist }) => {
       <div className="w-full h-[45vh] md:h-[70vh] overflow-hidden">
         {firstImage && (
           <img
-            src={`http://localhost:8000${
+            src={
               hovered && secondImage ? secondImage : firstImage
-            }`}
+            }
             alt={product.name}
             className="w-full h-full object-cover transition-all duration-300"
           />
