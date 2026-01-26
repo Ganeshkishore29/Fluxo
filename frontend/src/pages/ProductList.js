@@ -31,7 +31,7 @@ const ProductList = () => {
     fetchProducts();
 
     axios
-      .get(`${API_BASE_URL}/sub-categories/${id}/`)
+      .get(`${API_URL}/sub-categories/${id}/`)
       .then((res) => setSubCategoryName(res.data.name))
       .catch((err) => console.error("Sub-category fetch error", err));
   }, [id]);

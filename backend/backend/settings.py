@@ -142,8 +142,7 @@ REST_FRAMEWORK = {
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-USE_SQLITE = os.getenv("USE_SQLITE") == "True"
+USE_SQLITE = os.getenv("USE_SQLITE", "False").lower() == "true"
 
 if USE_SQLITE:
     DATABASES = {
@@ -161,6 +160,9 @@ else:
             "PASSWORD": os.getenv("MYSQL_ROOT_PASSWORD"),
             "HOST": os.getenv("MYSQLHOST"),
             "PORT": os.getenv("MYSQLPORT"),
+            "OPTIONS": {
+                "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
         }
     }
 
