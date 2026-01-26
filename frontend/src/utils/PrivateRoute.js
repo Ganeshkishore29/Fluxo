@@ -17,14 +17,9 @@ const PrivateRoute = ({ children }) => {
 };
 
 export default PrivateRoute;
+
 export const getImageUrl = (url) => {
   if (!url) return null;
-
-  // Cloudinary or absolute URL
-  if (url.startsWith("http")) {
-    return url;
-  }
-
-  // Old local media path
+  if (url.startsWith("http")) return url;
   return `${process.env.REACT_APP_API_BASE_URL}${url}`;
 };
