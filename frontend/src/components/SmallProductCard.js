@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate} from "react-router-dom";
 
+
 const SmallProductCard = ({ product }) => {
   const navigate = useNavigate();
 
@@ -14,7 +15,7 @@ const SmallProductCard = ({ product }) => {
       onClick={() => navigate(`/product/${product.id}`)}
     >
       <img
-        src={`http://localhost:8000${Image}`}
+        src={`${process.env.REACT_APP_API_BASE_URL}${Image}`}
         alt={product.name}
         className="w-full h-full object-cover transition-all duration-300"
       />
