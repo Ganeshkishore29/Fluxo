@@ -1,5 +1,20 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/:path*",
+      "destination": "https://fluxo-production-c578.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/media/:path*",
+      "destination": "https://fluxo-production-c578.up.railway.app/media/:path*"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://fluxo-production-c578.up.railway.app/admin/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
