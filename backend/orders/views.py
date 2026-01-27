@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction
 from .models import Order, OrderItem, Address
-from products.models import Product, ProductSize
 from django.conf import settings
 from decimal import Decimal
 from .serializers import OrderSerializer, OrderItemSerializer, AddressSerializer
@@ -16,15 +15,17 @@ CASHFREE_SECRET_KEY = settings.CASHFREE_CLIENT_SECRET
 
 # CART VIEW
 class CartView(APIView):
-    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        order, _ = Order.objects.get_or_create(
-            user=request.user,
-            status='PENDING'
-        )
-        return Response(OrderSerializer(order).data)
+        order = Order.objects.filter(user=request.user, status='PENDING').first()
+        if not order:
+            order = Order.objects.create(user=request.user, status='PENDING')
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
+
+    authentication_classes = [JWTAuthentication]
+
 
     def post(self, request):
         product_id = request.data.get('product_id')
@@ -33,16 +34,26 @@ class CartView(APIView):
         try:
             quantity = int(request.data.get('quantity', 1))
             if quantity < 1:
-                raise ValueError
-        except:
-            return Response({"error": "Invalid quantity"}, status=400)
+                return Response(
+                    {"error": "Quantity must be at least 1"},
+                    status=400
+                )
+        except (ValueError, TypeError):
+            return Response(
+                {"error": "Invalid quantity"},
+                status=400
+            )
+
+        from products.models import Product, ProductSize
 
         product = get_object_or_404(Product, id=product_id)
         size = get_object_or_404(ProductSize, id=size_id, product=product)
 
-        if quantity > size.stock:
+        if size.stock < quantity:
             return Response(
-                {"error": f"Only {size.stock} items available for size {size.size}."},
+                {
+                    "error": f"Only {size.stock} items available for size {size.size}."
+                },
                 status=400
             )
 
@@ -51,57 +62,88 @@ class CartView(APIView):
             status='PENDING'
         )
 
-        item, created = OrderItem.objects.get_or_create(
+        order_item, created = OrderItem.objects.get_or_create(
             order=order,
             product=product,
             size=size,
-            defaults={'price': product.price, 'quantity': quantity}
+            defaults={
+                'price': product.price,
+                'quantity': quantity
+            }
         )
 
+        
         if not created:
-            if item.quantity + quantity > size.stock:
+            new_quantity = order_item.quantity + quantity
+
+            if new_quantity > size.stock:
                 return Response(
-                    {"error": f"Only {size.stock} items available."},
+                    {
+                        "error": f"Only {size.stock} items available for size {size.size}."
+                    },
                     status=400
                 )
-            item.quantity += quantity
-            item.save()
+
+            order_item.quantity = new_quantity
+            order_item.save()
 
         order.calculate_total()
-        return Response(OrderSerializer(order).data, status=201)
+        return Response(
+            OrderSerializer(order).data,
+            status=201
+        )
 
     @transaction.atomic
     def patch(self, request):
+        """
+        Batch update cart item:
+        action = increase | decrease | remove
+        """
         order = get_object_or_404(Order, user=request.user, status='PENDING')
-        item = get_object_or_404(OrderItem, id=request.data.get('item_id'), order=order)
 
+        item_id = request.data.get('item_id')
         action = request.data.get('action')
 
+        item = get_object_or_404(OrderItem, id=item_id, order=order)
+        size = item.size  # ProductSize (has stock)
+
         if action == "increase":
-            if item.quantity + 1 > item.size.stock:
-                return Response({"error": "Stock limit reached"}, status=400)
+            if item.quantity + 1 > size.stock:
+                return Response(
+                    {"error": f"Only {size.stock} items available for size {size.size}."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             item.quantity += 1
+            item.save()
 
         elif action == "decrease":
-            item.quantity -= 1
-            if item.quantity <= 0:
-                item.delete()
-                order.calculate_total()
-                return Response(OrderSerializer(order).data)
+            if item.quantity > 1:
+                item.quantity -= 1
+                item.save()
+            else:
+                item.delete()  # quantity 1 → remove item
+
+        elif action == "remove":
+            item.delete()
 
         else:
-            return Response({"error": "Invalid action"}, status=400)
+            return Response(
+                {"error": "Invalid action"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        item.save()
         order.calculate_total()
-        return Response(OrderSerializer(order).data)
-
-    def delete(self, request, pk):
+        return Response(OrderSerializer(order).data, status=200)
+    
+    def delete(self, request,pk):
+        """Remove item from cart"""
         order = get_object_or_404(Order, user=request.user, status='PENDING')
-        item = get_object_or_404(OrderItem, id=pk, order=order)
+        item_id = pk
+        item = get_object_or_404(OrderItem, id=item_id, order=order)
         item.delete()
         order.calculate_total()
         return Response(OrderSerializer(order).data)
+
 
 
 class TotalBillView(APIView):

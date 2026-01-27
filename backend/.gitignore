@@ -32,3 +32,7 @@ dist/
 # System files
 .DS_Store
 Thumbs.db
+.env.local
+.env.development.local
+.env.test.local
+.env.production
