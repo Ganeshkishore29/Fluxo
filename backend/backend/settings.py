@@ -18,6 +18,8 @@ from re import M
 from dotenv import load_dotenv
 import os
 
+from fastapi.staticfiles import StaticFiles
+
 
 
 
@@ -81,19 +83,21 @@ INSTALLED_APPS = [
 ]
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, "staticfiles")]
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
-}
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-
+WHITENOISE_ROOT = os.path.join(BASE_DIR, 'media')
+WHITENOISE_USE_FINDERS = True 
+WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds
+WHITENOISE_AUTOREFRESH = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
