@@ -18,9 +18,12 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
+    images = serializers.ImageField(use_url=True)
+
     class Meta:
-        model=ProductImages
-        fields=['id','images'] 
+        model = ProductImages
+        fields = ['id', 'images']
+
 
 class ProductSizeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,6 +69,7 @@ class ProductLiteSerializer(serializers.ModelSerializer):
         return None
 
 class BannerImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True)
     product_id = serializers.IntegerField(source="product.id", read_only=True)
 
     class Meta:
