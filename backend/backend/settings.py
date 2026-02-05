@@ -78,35 +78,18 @@ INSTALLED_APPS = [
     'recommendations',
     'cloudinary_storage',
     'cloudinary',
-
+    'maintenance',
   
 ]
 
-IS_RAILWAY = os.getenv('RAILWAY_ENVIRONMENT') == 'production'
 
-if IS_RAILWAY:
-    # Use mounted volume for media on Railway
-    MEDIA_ROOT = '/data/media'
-    # Ensure directory exists
-    os.makedirs(MEDIA_ROOT, exist_ok=True)
-else:
-    # Local development
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL = '/media/'
 
 
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, "staticfiles")]
 
-
-MEDIA_URL = "/media/"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-WHITENOISE_ROOT = MEDIA_ROOT
-WHITENOISE_USE_FINDERS = True 
-WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds
-WHITENOISE_AUTOREFRESH = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 MIDDLEWARE = [
     
     'django.middleware.security.SecurityMiddleware',
