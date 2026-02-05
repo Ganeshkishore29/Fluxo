@@ -82,6 +82,9 @@ INSTALLED_APPS = [
   
 ]
 
+CLOUDINARY_STORAGE = {
+    "PREFIX": "",
+}
 
 STORAGES = {
     "default": {
