@@ -19,7 +19,7 @@ const PrivateRoute = ({ children }) => {
 export default PrivateRoute;
 
 export const getImageUrl = (url) => {
-  if (!url) return null;
+  if (!url) return "";
   if (url.startsWith("http")) return url;
   return `${process.env.REACT_APP_API_BASE_URL}${url}`;
 };
