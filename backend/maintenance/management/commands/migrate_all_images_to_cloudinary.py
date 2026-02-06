@@ -16,8 +16,8 @@ class Command(BaseCommand):
             return "skipped"
 
         # Already on Cloudinary
-        if field.url.startswith("http"):
-            return "skipped"
+        # if field.url.startswith("http"):
+        #     return "skipped"
 
         # IMPORTANT: keep relative path (folder + filename)
         relative_path = field.name
@@ -29,10 +29,10 @@ class Command(BaseCommand):
 
         with open(local_path, "rb") as f:
             field.save(
-                relative_path,   # ✅ KEEP FOLDER
-                File(f),
-                save=True
-            )
+    os.path.basename(local_path),
+    File(f),
+    save=True
+)
 
         return "migrated"
 

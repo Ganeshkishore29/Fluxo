@@ -29,5 +29,5 @@ urlpatterns = [
     path('api/', include('activities.urls')),
     path('api/', include('recommendations.urls')),
 ]
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # This line serves media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # This line serves media files during development
