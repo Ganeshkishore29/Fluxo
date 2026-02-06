@@ -18,7 +18,7 @@ from re import M
 from dotenv import load_dotenv
 import os
 
-from fastapi.staticfiles import StaticFiles
+
 
 
 
@@ -81,7 +81,10 @@ INSTALLED_APPS = [
     'maintenance',
   
 ]
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 CLOUDINARY_STORAGE = {
     "PREFIX": "",
 }
