@@ -1,3 +1,4 @@
+from itertools import product
 import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -76,16 +77,15 @@ class CartView(APIView):
         if not created:
             new_quantity = order_item.quantity + quantity
 
-            if new_quantity > size.stock:
-                return Response(
-                    {
-                        "error": f"Only {size.stock} items available for size {size.size}."
-                    },
-                    status=400
-                )
+        if new_quantity > size.stock:
+            return Response(
+                {"error": f"Only {size.stock} items available for size {size.size}."},
+                status=400
+            )
+        order_item.quantity = new_quantity
+        order_item.price = product.price   
+        order_item.save()
 
-            order_item.quantity = new_quantity
-            order_item.save()
 
         order.calculate_total()
         return Response(
@@ -190,7 +190,7 @@ class CashfreePaymentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        print("CASHFREE REQUEST DATA 👉", request.data)
+        print("CASHFREE REQUEST DATA ", request.data)
 
         phone = request.data.get("phone")
 
@@ -230,8 +230,8 @@ class CashfreePaymentView(APIView):
             "Content-Type": "application/json",
         }
 
-        print("CASHFREE PAYLOAD 👉", payload)
-        print("CASHFREE URL 👉", settings.CASHFREE_API_URL)
+        print("CASHFREE PAYLOAD ", payload)
+        print("CASHFREE URL ", settings.CASHFREE_API_URL)
 
         # 🔁 Retry logic (sandbox-safe)
         for attempt in range(2):
@@ -243,8 +243,8 @@ class CashfreePaymentView(APIView):
                     timeout=15
                 )
 
-                print("CASHFREE STATUS 👉", response.status_code)
-                print("CASHFREE RESPONSE 👉", response.text)
+                print("CASHFREE STATUS ", response.status_code)
+                print("CASHFREE RESPONSE ", response.text)
 
                 if response.status_code in [200, 201]:
                     return Response({
@@ -253,7 +253,7 @@ class CashfreePaymentView(APIView):
                     })
 
             except requests.exceptions.RequestException as e:
-                print("CASHFREE ERROR 👉", str(e))
+                print("CASHFREE ERROR ", str(e))
 
             time.sleep(1)
 

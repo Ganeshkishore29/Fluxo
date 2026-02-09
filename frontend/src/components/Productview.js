@@ -235,7 +235,7 @@ const handleAddToCart = async () => {
             const total = product.images.length;
             const isFullWidth =
               index === 0 || (total >= 4 && index === total - 1);
-              console.log(img.images);
+              //console.log(img.images);
             return (
               <img
                 key={img.id}
