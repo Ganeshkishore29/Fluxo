@@ -195,12 +195,6 @@ else:
     }
 
 
-print("MYSQLDATABASE =", os.getenv("MYSQLDATABASE"))
-print("MYSQLHOST =", os.getenv("MYSQLHOST"))
-print("MYSQLPORT =", os.getenv("MYSQLPORT"))
-print("MYSQLUSER =", os.getenv("MYSQLUSER"))
-print("MYSQL_ROOT_PASSWORD =", os.getenv("MYSQL_ROOT_PASSWORD"))
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

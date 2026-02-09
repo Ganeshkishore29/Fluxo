@@ -4,7 +4,6 @@ import axios from "axios";
 import { Heart, Plus } from "lucide-react";
 import { getToken } from "../utils/PrivateRoute";
 import SimilarProduct from "./SimilarProduct";
-import { getImageUrl } from "../utils/PrivateRoute";
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
