@@ -115,7 +115,7 @@ const handleWishlistToggle = async () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+     
       //  LOG ACTIVITY AFTER SUCCESS
       await axios.post(
         `${API_URL}/activity/create/`,
