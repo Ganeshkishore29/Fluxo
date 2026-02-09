@@ -28,6 +28,8 @@ class CartView(APIView):
     authentication_classes = [JWTAuthentication]
 
 
+
+    @transaction.atomic
     def post(self, request):
         product_id = request.data.get('product_id')
         size_id = request.data.get('size_id')
@@ -35,15 +37,9 @@ class CartView(APIView):
         try:
             quantity = int(request.data.get('quantity', 1))
             if quantity < 1:
-                return Response(
-                    {"error": "Quantity must be at least 1"},
-                    status=400
-                )
+                return Response({"error": "Quantity must be at least 1"}, status=400)
         except (ValueError, TypeError):
-            return Response(
-                {"error": "Invalid quantity"},
-                status=400
-            )
+            return Response({"error": "Invalid quantity"}, status=400)
 
         from products.models import Product, ProductSize
 
@@ -52,9 +48,7 @@ class CartView(APIView):
 
         if size.stock < quantity:
             return Response(
-                {
-                    "error": f"Only {size.stock} items available for size {size.size}."
-                },
+                {"error": f"Only {size.stock} items available for size {size.size}."},
                 status=400
             )
 
@@ -73,27 +67,29 @@ class CartView(APIView):
             }
         )
 
-        
         if not created:
             new_quantity = order_item.quantity + quantity
 
-        if new_quantity > size.stock:
-            return Response(
-                {"error": f"Only {size.stock} items available for size {size.size}."},
-                status=400
-            )
-        order_item.quantity = new_quantity
-        order_item.price = product.price   
-        order_item.save()
+            if new_quantity > size.stock:
+                return Response(
+                    {"error": f"Only {size.stock} items available for size {size.size}."},
+                    status=400
+                )
 
+            order_item.quantity = new_quantity
+            order_item.price = product.price
+            order_item.save()
 
+        # ALWAYS runs (created OR not)
         order.calculate_total()
+
         return Response(
             OrderSerializer(order).data,
             status=201
         )
 
-    @transaction.atomic
+
+    @transaction.atomic  # ensures that all operations inside this method are treated as a single unit. If any operation fails, the entire transaction will be rolled back, maintaining data integrity.
     def patch(self, request):
         """
         Batch update cart item:
