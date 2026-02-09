@@ -13,13 +13,9 @@ const ProductCard = ({ product, onRemoveFromWishlist }) => {
   const token = getToken();
   const navigate = useNavigate();
 
- const firstImage = product.images?.[0]?.images
-  ? `${API_URL}${product.images[0].images}`
-  : null;
+ const firstImage = product.images?.[0]?.images || null;
+const secondImage = product.images?.[1]?.images || null;
 
-const secondImage = product.images?.[1]?.images
-  ? `${API_URL}${product.images[1].images}`
-  : null;
   useEffect(() => {
     if (!token || !product?.id) return;
 
@@ -69,10 +65,11 @@ const secondImage = product.images?.[1]?.images
       <div className="w-full h-[45vh] md:h-[70vh] overflow-hidden">
         {firstImage && (
           <img
-            src={hovered && secondImage ? secondImage : firstImage}
-            alt={product.name}
-            className="w-full h-full object-cover transition-all duration-300"
-          />
+  src={hovered && secondImage ? secondImage : firstImage}
+  alt={product.name}
+  className="w-full h-full object-cover transition-all duration-300"
+/>
+
         )}
       </div>
 
