@@ -6,7 +6,9 @@ import os
 
 from products.models import ProductImages, BannerImage, SubCategory
 
-
+# This command will re-upload all existing images to Cloudinary and update the DB URLs accordingly.
+# Usage: >>python manage.py migrate_all_images_to_cloudinary
+ 
 class Command(BaseCommand):
     help = "FORCE re-upload ALL images to Cloudinary and fix DB URLs"
 

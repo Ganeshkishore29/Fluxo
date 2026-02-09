@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 const ProductList = () => {
