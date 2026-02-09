@@ -18,6 +18,3 @@ const PrivateRoute = ({ children }) => {
 
 export default PrivateRoute;
 
-export const getImageUrl = (url) => {
-  return url || "";
-};
