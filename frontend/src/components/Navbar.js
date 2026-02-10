@@ -424,7 +424,9 @@ useEffect(() => {
                           )
                         }
                       >
-                        {cat.name}
+                       <Link to={`/main-categories/${cat.id}`} className="flex-1">
+                         {cat.name}
+                       </Link>
                         <ArrowRight
                           size={16}
                           className={`transition-transform ${activeMobileCategory === cat.id ? "rotate-90" : ""
