@@ -34,6 +34,7 @@ class OrderSerializer(serializers.ModelSerializer):
         source='address',
         write_only=True
     )
+    user = serializers.StringRelatedField(read_only=True)
     total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
