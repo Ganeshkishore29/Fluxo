@@ -66,27 +66,30 @@ class CartView(APIView):
                 'quantity': quantity
             }
         )
-
-        if not created:
+        
+        if created:
+            order_item.price = product.price
+            order_item.save()
+        else:
             new_quantity = order_item.quantity + quantity
-
+        
             if new_quantity > size.stock:
                 return Response(
                     {"error": f"Only {size.stock} items available for size {size.size}."},
                     status=400
                 )
-
+        
             order_item.quantity = new_quantity
             order_item.price = product.price
             order_item.save()
-
-        # ALWAYS runs (created OR not)
+        
         order.calculate_total()
-
+        
         return Response(
-            OrderSerializer(order).data,
+            OrderSerializer(order, context={"request": request}).data,
             status=201
         )
+
 
 
     @transaction.atomic  # ensures that all operations inside this method are treated as a single unit. If any operation fails, the entire transaction will be rolled back, maintaining data integrity.
