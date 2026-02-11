@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
 import { Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}`;
 
 const Checkout = () => {
   const token = getToken();
-
+  const navigate = useNavigate();
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -32,6 +33,12 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
     city: "",
     pincode: "",
   });
+
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      navigate("/cart");
+    }
+  }, [navigate,cartItems]);
 
   /* ---------------- UI ---------------- */
   const [error, setError] = useState("");
@@ -142,7 +149,7 @@ const handlePayment = async () => {
 
           <div className="flex gap-4">
             {cartItems.map(item => (
-              <div key={item.id} className="relative w-20 h-24 border rounded cursor-pointer" onClick={() => navigate(`/product/${item.product.id}`)}>
+              <div key={item.id} className="relative w-20 h-24 border rounded" onClick={() => navigate(`/product/${item.product.id}`)} >
                 <img
                   src={item.product.images[0].images}
                   className="w-full h-full object-cover"
