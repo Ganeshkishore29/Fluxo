@@ -142,7 +142,7 @@ const handlePayment = async () => {
 
           <div className="flex gap-4">
             {cartItems.map(item => (
-              <div key={item.id} className="relative w-20 h-24 border rounded">
+              <div key={item.id} className="relative w-20 h-24 border rounded cursor-pointer" onClick={() => navigate(`/product/${item.product.id}`)}>
                 <img
                   src={item.product.images[0].images}
                   className="w-full h-full object-cover"
