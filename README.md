@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>FLUXO - AI Powered E-Commerce Platform</title>
+    
 </head>
 <body>
 
@@ -207,4 +207,5 @@ vector search implementation, payment integration, and scalable system design.
 
 </body>
 </html>
+
 
