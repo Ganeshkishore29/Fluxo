@@ -34,8 +34,8 @@ USER
         ▼
     Django REST API (JWT Authentication)
         │
-   ┌────┼───────────┐
-   ▼    ▼           ▼
+   ┌────┼──────────┐────────────┐
+   ▼               ▼            ▼
 CLIP+FAISS      Redis      GROQ LLM
 (Image Search) (Autocomplete) (Chat Assistant)
         │
@@ -207,5 +207,6 @@ vector search implementation, payment integration, and scalable system design.
 
 </body>
 </html>
+
 
 
