@@ -3,7 +3,7 @@ import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
 import { Trash2 } from "lucide-react";
 
-const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}`;
 
 const Checkout = () => {
   const token = getToken();
@@ -39,20 +39,20 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
 
   /* ---------------- FETCH DATA ---------------- */
   const fetchSummary = async () => {
-    const res = await axios.get(`${API_URL}/total-bill/`, { headers });
+    const res = await axios.get(`${API_URL}/api/total-bill/`, { headers });
     setCheckoutData(res.data);
   };
 
   useEffect(() => {
     if (!token) return;
 
-    axios.get(`${API_URL}/cart/`, { headers })
+    axios.get(`${API_URL}/api/cart/`, { headers })
       .then(res => setCartItems(res.data.items || res.data));
 
-    axios.get(`${API_URL}/profile/`, { headers })
+    axios.get(`${API_URL}/api/profile/`, { headers })
       .then(res => setEmail(res.data.email));
 
-    axios.get(`${API_URL}/addresses/`, { headers })
+    axios.get(`${API_URL}/api/addresses/`, { headers })
       .then(res => setAddresses(res.data || []));
 
     fetchSummary();
@@ -60,7 +60,7 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
 
   /* ---------------- REMOVE CART ITEM ---------------- */
   const removeFromCart = async (id) => {
-    await axios.delete(`${API_URL}/cart/${id}/`, { headers });
+    await axios.delete(`${API_URL}/api/cart/${id}/`, { headers });
     setCartItems(prev => prev.filter(i => i.id !== id));
     fetchSummary();
   };
@@ -69,7 +69,7 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
   const handleSaveAddress = async () => {
     try {
       const res = await axios.post(
-        `${API_URL}/addresses/`,
+        `${API_URL}/api/addresses/`,
         form,
         { headers }
       );
@@ -79,7 +79,7 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
         res.data
       ]);
 
-    } catch {
+    } catch (err) {
       setError("Failed to save address");
     }
   };
@@ -100,7 +100,7 @@ const handlePayment = async () => {
 
   try {
     const res = await axios.post(
-      `${API_URL}/cashfree/`,
+      `${API_URL}/api/cashfree/`,
       {
         phone,
         email,
@@ -144,7 +144,7 @@ const handlePayment = async () => {
             {cartItems.map(item => (
               <div key={item.id} className="relative w-20 h-24 border rounded">
                 <img
-                  src={getImageUrl(item.product.images[0].images)}
+                  src={item.product.images[0].images}
                   className="w-full h-full object-cover"
                 />
                 <button

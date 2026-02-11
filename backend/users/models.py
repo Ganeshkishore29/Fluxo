@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser,PermissionsMixin
 
 
-class CustomUserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager): # custom user manager to handle user creation and superuser creation
     def create_user(self,email,password=None,**extra_fields):
         if not email:
             raise ValueError("users must have an email address")
@@ -16,7 +16,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser",True)      #full access to everything in admin
         return self.create_user(email,password,**extra_fields)
 
-class CustomUser(AbstractBaseUser,PermissionsMixin):
+class CustomUser(AbstractBaseUser,PermissionsMixin): # custom user model to use email instead of username and to add full_name field
     email=models.EmailField(unique=True)
     full_name=models.CharField(max_length=100,blank=True) 
     is_active=models.BooleanField(default=True)
