@@ -157,7 +157,10 @@ const handlePayment = async () => {
                   className="w-full h-full object-cover"
                 />
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFromCart(item.id);
+                  }}
                   className="absolute -top-2 -right-2 bg-white p-1 rounded-full"
                 >
                   <Trash2 size={14} />
