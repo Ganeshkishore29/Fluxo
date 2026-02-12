@@ -19,9 +19,14 @@ import ChatWidget from "./components/ChatWidget";
 import PaymentSuccess from "./components/PaymentSuccess";
 import Recommendations from "./pages/Recommendations";
 
+import ScrollToTop from "./components/ScrollToTop";
+
 const App = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white">
+
+      <ScrollToTop/>
+
       {/* Fixed Navbar */}
       <Navbar />
 
