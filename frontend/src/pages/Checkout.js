@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import axios from "axios";
 import { getToken } from "../utils/PrivateRoute";
 import { Trash2 } from "lucide-react";
@@ -17,6 +17,7 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
   /* ---------------- CART ---------------- */
   const [cartItems, setCartItems] = useState([]);
   const [checkoutData, setCheckoutData] = useState(null);
+  const [cartLoading, setCartLoading] = useState(true);
 
   /* ---------------- CONTACT ---------------- */
   const [email, setEmail] = useState("");
@@ -35,10 +36,10 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
   });
 
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (!cartLoading && cartItems.length === 0) {
       navigate("/cart");
     }
-  }, [navigate,cartItems]);
+  }, [navigate,cartItems, cartLoading]);
 
   /* ---------------- UI ---------------- */
   const [error, setError] = useState("");
@@ -54,7 +55,8 @@ const [showMobileSummary, setShowMobileSummary] = useState(false);
     if (!token) return;
 
     axios.get(`${API_URL}/api/cart/`, { headers })
-      .then(res => setCartItems(res.data.items || res.data));
+      .then(res => setCartItems(res.data.items || res.data))
+      .finally(() => setCartLoading(false));
 
     axios.get(`${API_URL}/api/profile/`, { headers })
       .then(res => setEmail(res.data.email));
