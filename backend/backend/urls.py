@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings 
 from django.conf.urls.static import static 
+from django.http import JsonResponse
+
+def health(request):
+    return JsonResponse({"status": "Backend is running"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +32,11 @@ urlpatterns = [
     path('api/', include('chatbot.urls')),
     path('api/', include('activities.urls')),
     path('api/', include('recommendations.urls')),
+    path('', health),
+
 ]
+
+
+
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # This line serves media files during development
