@@ -1,33 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cloudinary Image Migration Documentation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            line-height: 1.7;
-            background-color: #f9f9f9;
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-        code {
-            background: #eee;
-            padding: 3px 6px;
-            border-radius: 4px;
-        }
-        pre {
-            background: #222;
-            color: #fff;
-            padding: 15px;
-            overflow-x: auto;
-            border-radius: 6px;
-        }
-        .section {
-            margin-bottom: 40px;
-        }
-    </style>
+    <title></title>
+   
 </head>
 <body>
 
