@@ -28,6 +28,12 @@ useEffect(() => {
   axios
     .get(`${API_URL}/products/${id}/`)
     .then((res) => setProduct(res.data))
+    .then(() => {
+      if (imageScrollRef.current) {
+        imageScrollRef.current.scrollTop = 0;
+      }
+    })
+
     .catch((err) => console.error("Product fetch error", err));
 
   axios
