@@ -48,7 +48,7 @@ SECRET_KEY = 'django-insecure-q%&g*u!g7tl(k2j=907*bw*eg^fv!pe2usd)n8+khe7#az^_x&
 DEBUG = os.getenv("DEBUG") == "True"
 
 
-ALLOWED_HOSTS = ["fluxo-4x4y.onrender.com"]
+ALLOWED_HOSTS = ["https://fluxo-4x4y.onrender.com"]
 
 
 AUTH_USER_MODEL='users.CustomUser'
@@ -172,6 +172,7 @@ DATABASES = {
         default=os.environ.get("DATABASE_URL")
     )
 }
+
 
 
 #python manage.py dumpdata > data.json -used for dumping data from the database to a json file. This is useful for backup and for transferring data between different environments (like from local to production). The resulting data.json file can be loaded into another database using python manage.py loaddata data.json.
