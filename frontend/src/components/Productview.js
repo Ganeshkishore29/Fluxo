@@ -27,8 +27,7 @@ useEffect(() => {
 
   axios
     .get(`${API_URL}/products/${id}/`)
-    .then((res) => setProduct(res.data))
-    .then(() => {
+    .then((res) => {setProduct(res.data);
       if (imageScrollRef.current) {
         imageScrollRef.current.scrollTop = 0;
       }
