@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Database Migration - MySQL to PostgreSQL</title>
+    
 </head>
 <body>
 
