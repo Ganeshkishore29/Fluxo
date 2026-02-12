@@ -48,7 +48,7 @@ SECRET_KEY = 'django-insecure-q%&g*u!g7tl(k2j=907*bw*eg^fv!pe2usd)n8+khe7#az^_x&
 DEBUG = os.getenv("DEBUG") == "True"
 
 
-ALLOWED_HOSTS = ["https://fluxo-4x4y.onrender.com"]
+ALLOWED_HOSTS = ['fluxo-4x4y.onrender.com']
 
 
 AUTH_USER_MODEL='users.CustomUser'
