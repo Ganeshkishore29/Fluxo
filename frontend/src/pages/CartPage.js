@@ -193,7 +193,7 @@ const updateCartItem = async (itemId, action) => {
           ₹{checkoutData.final_total}
         </p>
       </div>
-
+<Link to="/checkout">
       <button
         className="
           bg-black
@@ -206,7 +206,7 @@ const updateCartItem = async (itemId, action) => {
         "
       >
         PROCEED
-      </button>
+      </button></Link>
     </div>
   </div>
 )}
