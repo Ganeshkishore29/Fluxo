@@ -10,6 +10,7 @@ const Signup = ({ email: prefilledEmail = "" }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const[loading,setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -28,7 +29,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (!isStrongPassword(password)) {
-    alert("Password must contain letters and numbers and be at least 8 characters.");
+    setError("Password must contain letters and numbers and be at least 8 characters.");
     return;
   }
 
@@ -57,11 +58,6 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center py-12">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-  </div>
-);
 
   return (
     /* ===== CENTERED OVERLAY ===== */
@@ -82,7 +78,12 @@ const LoadingSpinner = () => (
         <h2 className="text-2xl font-bold text-black mb-6 text-center">
           Create Account
         </h2>
-{loading ? <LoadingSpinner /> : (
+{loading && (
+    <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
+      <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* NAME */}
@@ -129,6 +130,7 @@ const LoadingSpinner = () => (
               className="w-full px-4 py-3 border border-[#c4b8a6] text-black focus:outline-none focus:border-black"
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           {/* SUBMIT BUTTON */}
           <button
@@ -138,7 +140,7 @@ const LoadingSpinner = () => (
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
-        </form>)}
+        </form>
       </div>
     </div>
   );
