@@ -59,6 +59,7 @@ useEffect(() => {
     .get(`${API_URL}/sub-categories/?parent=${id}`)
     .then((res) => {
       setSubCat(res.data);
+      setLoading
     })
     .catch((err) =>
       console.error("Sub-category fetch error", err)
@@ -110,14 +111,14 @@ const limitedRecommendations = recommendations.slice(0, 4);
 
  
 
- if (banners.length === 0) {
-  setLoading(true)
-    return <p className="relative">{loading && (
-    <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
-      <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+if (loading) {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-14 h-14 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
     </div>
-  )}</p>;
-     }
+  );
+}
+
   return (
     <>
       {/* ================= FULL WIDTH HERO BANNER ================= */}
