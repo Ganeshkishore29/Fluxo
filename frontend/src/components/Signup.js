@@ -53,7 +53,8 @@ const handleSubmit = async (e) => {
     navigate("/profile");
 
   } catch (err) {
-    alert("Signup failed");
+    setError("Registration failed. Please try again.");
+
   } finally {
     setLoading(false);
   }
@@ -85,7 +86,7 @@ const handleSubmit = async (e) => {
   )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
+{error && <p className="text-red-500 text-sm">{error}</p>}
           {/* NAME */}
           <div>
             <label className="block text-sm font-semibold text-black mb-2">
@@ -130,7 +131,7 @@ const handleSubmit = async (e) => {
               className="w-full px-4 py-3 border border-[#c4b8a6] text-black focus:outline-none focus:border-black"
             />
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          
 
           {/* SUBMIT BUTTON */}
           <button
