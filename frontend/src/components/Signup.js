@@ -25,7 +25,7 @@ const isStrongPassword = (pwd) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
 if (!isStrongPassword(password)) {
   alert("Password must contain letters and numbers and be at least 8 characters.");
   return;
@@ -39,6 +39,7 @@ if (!isStrongPassword(password)) {
       });
 
       alert("Signup successful!");
+      navigate("/");
     } catch (err) {
 if (err.response?.data?.password) {
   alert(err.response.data.password.join("\n"));
