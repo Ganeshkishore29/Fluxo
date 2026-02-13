@@ -111,7 +111,12 @@ const limitedRecommendations = recommendations.slice(0, 4);
  
 
  if (banners.length === 0) {
-    return <p className="p-10">Loading...</p>;
+  setLoading(true)
+    return <p className="relative">{loading && (
+    <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
+      <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  )}</p>;
      }
   return (
     <>
