@@ -10,12 +10,26 @@ const Signup = ({ email: prefilledEmail = "" }) => {
   const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
 useEffect(() => {
   setEmail(prefilledEmail);
 }, [prefilledEmail]);
 
+const isStrongPassword = (pwd) => {
+  return (
+    pwd.length >= 8 &&
+    /[A-Za-z]/.test(pwd) &&
+    /[0-9]/.test(pwd)
+  );
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+if (!isStrongPassword(password)) {
+  alert("Password must contain letters and numbers and be at least 8 characters.");
+  return;
+}
 
     try {
       const res = await axios.post(`${API_URL}/register/`, {
@@ -26,8 +40,9 @@ useEffect(() => {
 
       alert("Signup successful!");
     } catch (err) {
-      if (err.response?.data) {
-        alert(Object.values(err.response.data).flat().join("\n"));
+if (err.response?.data?.password) {
+  alert(err.response.data.password.join("\n"));
+
       } else {
         alert("Signup failed");
       }
