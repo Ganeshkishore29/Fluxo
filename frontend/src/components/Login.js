@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 
-const Login = ({ email: prefilledEmail = "" }) => {
+const Login = ({ email: prefilledEmail = ""}) => {
   const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Login from "./Login";
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
@@ -39,7 +40,16 @@ if (!isStrongPassword(password)) {
       });
 
       alert("Signup successful!");
-      navigate("/");
+
+        const loginRes = await axios.post(`${API_URL}/login/`, {
+    email,
+    password,
+  });
+
+  localStorage.setItem("access_token", loginRes.data.access);
+  localStorage.setItem("refresh_token", loginRes.data.refresh);
+
+  navigate("/profile");
     } catch (err) {
 if (err.response?.data?.password) {
   alert(err.response.data.password.join("\n"));
