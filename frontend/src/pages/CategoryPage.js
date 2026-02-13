@@ -111,7 +111,7 @@ const limitedRecommendations = recommendations.slice(0, 4);
 
  
 
-if (!banners.length) {
+if (banners.length === 0) {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-14 h-14 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
