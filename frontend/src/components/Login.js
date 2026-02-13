@@ -60,7 +60,7 @@ const Login = ({ email: prefilledEmail = "" }) => {
         className="w-full px-4 py-3 border-1 border-gray-300 text-black focus:outline-none"
         placeholder="your@email.com"
         required
-        disabled={prefilledEmail}
+        disabled={!!prefilledEmail}
       />
     </div>
 

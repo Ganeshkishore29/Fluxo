@@ -5,11 +5,14 @@ import { useNavigate } from "react-router-dom";
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
 
-const Signup = () => {
+const Signup = ({ email: prefilledEmail = "" }) => {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+useEffect(() => {
+  setEmail(prefilledEmail);
+}, [prefilledEmail]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

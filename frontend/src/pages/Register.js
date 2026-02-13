@@ -67,7 +67,7 @@ const handleEmailSubmit = async (e) => {
           </p>
         </div>
 
-       {emailExists === null && (
+{emailExists === null && (
   <form onSubmit={handleEmailSubmit} className="space-y-6">
     <div>
       <label className="block text-sm font-semibold text-black mb-2">
@@ -94,49 +94,37 @@ const handleEmailSubmit = async (e) => {
   </form>
 )}
 
+{emailExists !== null && (
+  <>
+    {showLogin ? <Login email={email} /> : <Signup email={email} />}
 
-        {/* Login / Signup */}
-        {emailExists !== null && (
-          <>
-            {showLogin ? <Login email={email} /> : <Signup email={email} />}
-
-            <div className="pt-6 border-t border-black text-center">
-              {showLogin ? (
-                <>
-                  <p className="text-sm text-black mb-3">
-                    New user?
-                  </p>
-                  <button
-                    onClick={() => {
-                      setShowLogin(false);
-                      setEmailExists(null);
-                      setEmail("");
-                    }}
-                    className="font-bold text-black underline"
-                  >
-                    Create account
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-sm text-black mb-3">
-                    Already have an account?
-                  </p>
-                  <button
-                    onClick={() => {
-                      setShowLogin(true);
-                      setEmailExists(null);
-                      setEmail("");
-                    }}
-                    className="font-bold text-black underline"
-                  >
-                    Sign in
-                  </button>
-                </>
-              )}
-            </div>
-          </>
-        )}
+    <div className="pt-6 border-t border-black text-center">
+      {showLogin ? (
+        <>
+          <p className="text-sm text-black mb-3">New user?</p>
+          <button
+            onClick={() => setShowLogin(false)}
+            className="font-bold text-black underline"
+          >
+            Create account
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="text-sm text-black mb-3">
+            Already have an account?
+          </p>
+          <button
+            onClick={() => setShowLogin(true)}
+            className="font-bold text-black underline"
+          >
+            Sign in
+          </button>
+        </>
+      )}
+    </div>
+  </>
+)}
 
       </div>
     </div>
