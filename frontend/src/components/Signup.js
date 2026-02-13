@@ -10,6 +10,7 @@ const Signup = ({ email: prefilledEmail = "" }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
+  const[loading,setLoading] = useState(false);
   const navigate = useNavigate();
 
 useEffect(() => {
@@ -23,42 +24,44 @@ const isStrongPassword = (pwd) => {
     /[0-9]/.test(pwd)
   );
 };
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  if (!isStrongPassword(password)) {
+    alert("Password must contain letters and numbers and be at least 8 characters.");
+    return;
+  }
 
-if (!isStrongPassword(password)) {
-  alert("Password must contain letters and numbers and be at least 8 characters.");
-  return;
-}
+  try {
+    setLoading(true);
 
-    try {
-      const res = await axios.post(`${API_URL}/register/`, {
-        full_name: name,
-        email,
-        password,
-      });
+    await axios.post(`${API_URL}/register/`, {
+      full_name: name,
+      email,
+      password,
+    });
 
-      alert("Signup successful!");
+    const loginRes = await axios.post(`${API_URL}/login/`, {
+      email,
+      password,
+    });
 
-        const loginRes = await axios.post(`${API_URL}/login/`, {
-    email,
-    password,
-  });
+    localStorage.setItem("access_token", loginRes.data.access);
+    localStorage.setItem("refresh_token", loginRes.data.refresh);
 
-  localStorage.setItem("access_token", loginRes.data.access);
-  localStorage.setItem("refresh_token", loginRes.data.refresh);
+    navigate("/profile");
 
-  navigate("/profile");
-    } catch (err) {
-if (err.response?.data?.password) {
-  alert(err.response.data.password.join("\n"));
-
-      } else {
-        alert("Signup failed");
-      }
-    }
-  };
+  } catch (err) {
+    alert("Signup failed");
+  } finally {
+    setLoading(false);
+  }
+};
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center py-12">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+  </div>
+);
 
   return (
     /* ===== CENTERED OVERLAY ===== */
@@ -67,7 +70,7 @@ if (err.response?.data?.password) {
       {/* ===== CARD ===== */}
       <div className="relative w-full max-w-md bg-white px-8 py-10 shadow-xl">
 
-        {/* ❌ CLOSE BUTTON */}
+        {/*  CLOSE BUTTON */}
         <button
           onClick={() => navigate(-1)}
           className="absolute top-4 right-4 text-black text-xl font-bold hover:opacity-70"
@@ -79,7 +82,7 @@ if (err.response?.data?.password) {
         <h2 className="text-2xl font-bold text-black mb-6 text-center">
           Create Account
         </h2>
-
+{loading ? <LoadingSpinner /> : (
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* NAME */}
@@ -92,6 +95,7 @@ if (err.response?.data?.password) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              disabled={loading}
               className="w-full px-4 py-3 border border-[#c4b8a6] text-black focus:outline-none focus:border-black"
             />
           </div>
@@ -106,6 +110,7 @@ if (err.response?.data?.password) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
               className="w-full px-4 py-3 border border-[#c4b8a6] text-black focus:outline-none focus:border-black"
             />
           </div>
@@ -120,6 +125,7 @@ if (err.response?.data?.password) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
               className="w-full px-4 py-3 border border-[#c4b8a6] text-black focus:outline-none focus:border-black"
             />
           </div>
@@ -127,11 +133,12 @@ if (err.response?.data?.password) {
           {/* SUBMIT BUTTON */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-3 bg-black text-white font-semibold hover:bg-gray-900 transition-colors"
           >
-            Sign Up
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
-        </form>
+        </form>)}
       </div>
     </div>
   );
