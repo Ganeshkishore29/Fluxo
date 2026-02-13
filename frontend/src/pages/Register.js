@@ -1,5 +1,5 @@
 // src/pages/Register.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import Login from '../components/Login';
 import Signup from '../components/Signup';
 import axios from 'axios';
