@@ -1,7 +1,7 @@
 # ml_service/main.py
 from fastapi import FastAPI, UploadFile, File
-from ml_service.schemas import RecommendRequest, RecommendResponse
-from ml_service.recommend import recommend_products
+from schemas import RecommendRequest, RecommendResponse
+from recommend import recommend_products
 
 from ml_service.recommend import recommend_from_image
 app = FastAPI(title="Fluxo ML Recommendation Service")
