@@ -8,3 +8,4 @@ torch==2.9.1
 torchvision==0.24.1
 torchaudio==2.9.1
 transformers==4.57.3
+open_clip_torch==3.2.0
