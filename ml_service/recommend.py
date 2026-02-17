@@ -1,6 +1,6 @@
 # ml_service/recommend.py
 import numpy as np
-from ml_service.faiss_index import search
+from faiss_index import search
 from PIL import Image
 from image_features import image_to_embedding
 from faiss_index import search
